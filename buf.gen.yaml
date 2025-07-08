@@ -1,0 +1,26 @@
+version: v1
+
+plugins:
+  # Go generation
+  - plugin: buf.build/protocolbuffers/go:v1.36.6
+    out: &go-out gen/go
+  - plugin: buf.build/grpc/go:v1.5.1
+    out: *go-out
+    
+  # C++ generation
+  - plugin: buf.build/protocolbuffers/cpp:v31.0
+    out: &cpp-out gen/cpp
+  - plugin: buf.build/grpc/cpp:v1.73.1
+    out: *cpp-out
+
+  # Python generation
+  - plugin: buf.build/protocolbuffers/python:v31.0
+    out: &python-out gen/python
+  - plugin: buf.build/grpc/python:v1.73.1
+    out: *python-out
+
+  # Java generation
+  - plugin: buf.build/protocolbuffers/java:v31.0
+    out: &java-out gen/java
+  - plugin: buf.build/grpc/java:v1.73.0
+    out: *java-out
