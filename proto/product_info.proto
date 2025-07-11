@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-option go_package = "github.com/8bit-euclid/grpc-sandbox/gen/go/ecommerce";
+option go_package = "./ecommerce";
+// option go_package = "github.com/8bit-euclid/grpc-sandbox/ecommerce";
+// option go_package = "github.com/8bit-euclid/grpc-sandbox/gen/go/ecommerce";
 package ecommerce;
 
 service ProductInfo {
