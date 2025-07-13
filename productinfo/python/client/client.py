@@ -1,12 +1,12 @@
 import grpc
 import logging
-from gen.python.product import product_info_pb2, product_info_pb2_grpc
+from gen.python.product import product_info_pb2 as pb2, product_info_pb2_grpc as pb2_grpc
 
 
 def run():
     # Set up a connection to the server.
     channel = grpc.insecure_channel('localhost:50051')
-    stub = product_info_pb2_grpc.ProductInfoStub(channel)
+    stub = pb2_grpc.ProductInfoStub(channel)
 
     # Contact the server and print out its response.
     name = "Apple iPhone 11"
@@ -14,7 +14,7 @@ def run():
     price = 699.00
 
     try:
-        response = stub.addProduct(product_info_pb2.Product(
+        response = stub.addProduct(pb2.Product(
             name=name,
             description=description,
             price=price
@@ -22,7 +22,7 @@ def run():
         logging.info(f"Product ID: {response.value} added successfully")
 
         product = stub.getProduct(
-            product_info_pb2.ProductID(value=response.value))
+            pb2.ProductID(value=response.value))
         logging.info(f"Product: {product}")
     except grpc.RpcError as e:
         logging.error(f"gRPC error: {e.code()} - {e.details()}")
