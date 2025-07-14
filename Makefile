@@ -21,6 +21,7 @@ build:
 generate: build
 	@echo "Generating code with buf..."
 	$(DOCKER_RUN) generate
+	export PYTHONPATH=$PYTHONPATH:$(OUT_DIR)/python
 	@echo "Code generation complete!"
 
 # Clean generated code

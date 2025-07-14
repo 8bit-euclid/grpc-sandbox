@@ -12,12 +12,6 @@ echo "🔧 Fixing workspace permissions..."
 sudo chown -R vscode:vscode /workspace 2>/dev/null || true
 sudo chmod -R u+w /workspace 2>/dev/null || true
 
-# Basic git configuration
-echo "📝 Setting up Git configuration..."
-git config --global user.name "Developer" 2>/dev/null || true
-git config --global user.email "developer@example.com" 2>/dev/null || true
-git config --global init.defaultBranch main 2>/dev/null || true
-
 # Install Go dependencies if go.mod exists
 if [ -f "go.mod" ]; then
     echo "📦 Installing Go dependencies..."

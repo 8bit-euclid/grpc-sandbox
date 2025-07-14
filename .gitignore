@@ -1,6 +1,5 @@
 # Generated protobuf files
 gen/
-generated/
 
 # Python
 __pycache__/

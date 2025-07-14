@@ -15,7 +15,7 @@
                 "ms-vscode.cpptools",
                 "ms-python.python",
                 "ms-python.pylint",
-                "ms-python.black-formatter",
+                "ms-python.autopep8",
                 "golang.go",
                 "augment.vscode-augment"
             ],

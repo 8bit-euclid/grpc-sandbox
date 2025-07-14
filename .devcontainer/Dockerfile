@@ -20,7 +20,6 @@ RUN apt-get update && apt-get install -y \
     # Basic tools
     curl \
     wget \
-    git \
     make \
     build-essential \
     libgrpc++-dev \
