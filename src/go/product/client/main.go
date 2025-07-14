@@ -1,6 +1,5 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc -I proto proto/product_info.proto --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/golang/product_info
+// gRPC ProductInfo Client
+// Code generation is handled by buf - run 'make generate' to regenerate protobuf files
 // Execute go run go/client/main.go
 
 package main

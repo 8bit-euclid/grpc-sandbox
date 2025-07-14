@@ -1,0 +1,57 @@
+{
+    "name": "gRPC Sandbox",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest",
+            "enableNonRootDocker": "true"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-python.python",
+                "ms-python.pylint",
+                "ms-python.black-formatter",
+                "golang.go",
+                "augment.vscode-augment"
+            ],
+            "settings": {
+                "C_Cpp.default.cppStandard": "c++23",
+                "C_Cpp.default.cStandard": "c17",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.formatting.provider": "black"
+            }
+        }
+    },
+    "forwardPorts": [50051, 8080, 3000],
+    "portsAttributes": {
+        "50051": {
+            "label": "gRPC Server",
+            "onAutoForward": "notify"
+        },
+        "8080": {
+            "label": "HTTP Server",
+            "onAutoForward": "notify"
+        },
+        "3000": {
+            "label": "Development Server",
+            "onAutoForward": "notify"
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/setup-workspace.sh && bash .devcontainer/test-workspace.sh",
+    "remoteUser": "vscode",
+    "workspaceFolder": "/workspace",
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+    ],
+    "containerEnv": {
+        "WORKSPACE_FOLDER": "/workspace"
+    },
+    "updateRemoteUserUID": true,
+    "initializeCommand": "bash -c 'touch ${localEnv:HOME}/.gitconfig 2>/dev/null || true; mkdir -p ${localEnv:HOME}/.ssh 2>/dev/null || true'"
+}

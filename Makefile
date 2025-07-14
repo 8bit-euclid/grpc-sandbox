@@ -1,4 +1,4 @@
-# Makefile for generating gRPC code from protobuf files. Docker is used to run the protoc compiler in a container and the generated code is written to the 'gen' directory.
+# Makefile for generating gRPC code from protobuf files using buf. Docker is used to run buf in a container and the generated code is written to the 'gen' directory.
 
 # Configuration. Use current user's UID and GID to avoid permission issues
 UID = $(shell id -u)
@@ -21,6 +21,7 @@ build:
 generate: build
 	@echo "Generating code with buf..."
 	$(DOCKER_RUN) generate
+	@echo "Code generation complete!"
 
 # Clean generated code
 clean:
