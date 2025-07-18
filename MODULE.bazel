@@ -1,0 +1,36 @@
+###############################################################################
+# Bazel now uses Bzlmod by default to manage external dependencies.
+# Please consider migrating your external dependencies from WORKSPACE to MODULE.bazel.
+#
+# For more details, please check https://github.com/bazelbuild/bazel/issues/18958
+###############################################################################
+
+module(name = "grpc_sandbox")
+
+# Protocol Buffers and gRPC
+bazel_dep(name = "protobuf", version = "30.0")
+bazel_dep(name = "grpc", version = "1.73.1")
+bazel_dep(name = "rules_proto", version = "7.0.2")
+
+# Go rules
+bazel_dep(name = "rules_go", version = "0.50.1")
+bazel_dep(name = "gazelle", version = "0.40.0")
+
+# Python rules
+bazel_dep(name = "rules_python", version = "1.0.0")
+
+# Python interpreter and pip dependencies
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(python_version = "3.12")
+use_repo(python, "python_3_12")
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "pip",
+    python_version = "3.12",
+    requirements_lock = "//:requirements.txt",
+)
+use_repo(pip, "pip")
+
+# C++ rules (usually included by default, but explicit is better)
+bazel_dep(name = "rules_cc", version = "0.1.1")

@@ -7,7 +7,7 @@
 #include <format>
 
 #include <grpcpp/grpcpp.h>
-#include "product/product_info.grpc.pb.h"
+#include "gen/c++/product/product_info.grpc.pb.h"
 
 namespace productinfo {
 

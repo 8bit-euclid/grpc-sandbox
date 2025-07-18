@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package order;
+option go_package = "./order";
+
+// Example message - replace with your actual messages
+message OrderManagementRequest {
+  string id = 1;
+}
+
+message OrderManagementResponse {
+  string message = 1;
+  bool success = 2;
+}
+
+// Example service - replace with your actual service
+service OrderManagementService {
+  rpc GetOrderManagement(OrderManagementRequest) returns (OrderManagementResponse);
+}

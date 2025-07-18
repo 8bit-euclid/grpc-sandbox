@@ -3,12 +3,7 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
-    "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {
-            "version": "latest",
-            "enableNonRootDocker": "true"
-        }
-    },
+
     "customizations": {
         "vscode": {
             "extensions": [
@@ -17,14 +12,19 @@
                 "ms-python.pylint",
                 "ms-python.autopep8",
                 "golang.go",
-                "augment.vscode-augment"
+                "bazelbuild.vscode-bazel",
+                "augment.vscode-augment",
+                "vscode.git"
             ],
             "settings": {
                 "C_Cpp.default.cppStandard": "c++23",
                 "C_Cpp.default.cStandard": "c17",
                 "python.linting.enabled": true,
                 "python.linting.pylintEnabled": true,
-                "python.formatting.provider": "black"
+                "python.formatting.provider": "black",
+                "augment.enableAutoCompletion": true,
+                "augment.enableInlineChat": true,
+                "augment.apiEndpoint": "your-api-endpoint-if-custom"
             }
         }
     },
@@ -43,7 +43,7 @@
             "onAutoForward": "notify"
         }
     },
-    "postCreateCommand": "bash .devcontainer/setup-workspace.sh && bash .devcontainer/test-workspace.sh",
+    "postCreateCommand": "bash .devcontainer/setup-workspace.sh",
     "remoteUser": "vscode",
     "workspaceFolder": "/workspace",
     "mounts": [
@@ -52,6 +52,5 @@
     "containerEnv": {
         "WORKSPACE_FOLDER": "/workspace"
     },
-    "updateRemoteUserUID": true,
-    "initializeCommand": "bash -c 'touch ${localEnv:HOME}/.gitconfig 2>/dev/null || true; mkdir -p ${localEnv:HOME}/.ssh 2>/dev/null || true'"
+    "updateRemoteUserUID": true
 }

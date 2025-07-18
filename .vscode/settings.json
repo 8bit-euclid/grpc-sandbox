@@ -1,0 +1,9 @@
+{
+    // Workspace settings that will be shared between host and devcontainer
+    // Add your Augment extension settings here
+    "augment.enableAutoCompletion": true,
+    "augment.enableInlineChat": true,
+    // Add other extension settings as needed
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4
+}

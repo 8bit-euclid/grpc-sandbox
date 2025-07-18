@@ -1,0 +1,7 @@
+# C++23 support
+build --cxxopt=-std=c++23
+build --host_cxxopt=-std=c++23
+
+# Optimization flags
+build --copt=-O2
+build --cxxopt=-O2

@@ -1,3 +1,10 @@
+# Bazel build artifacts - DO NOT COMMIT THESE
+bazel-*
+bazel-out/
+bazel-bin/
+bazel-testlogs/
+bazel-workspace/
+
 # Generated protobuf files
 gen/
 
@@ -61,6 +68,9 @@ CTestTestfile.cmake
 *.test
 *.out
 go.work
+go.mod
+go.sum
+vendor/
 
 # Java
 *.class
@@ -77,7 +87,6 @@ go.work
 hs_err_pid*
 
 # IDE and Editor files
-.vscode/
 .idea/
 *.swp
 *.swo

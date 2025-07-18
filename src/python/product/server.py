@@ -2,7 +2,7 @@ import logging
 import uuid
 from concurrent import futures
 import grpc
-from gen.python.product import product_info_pb2, product_info_pb2_grpc
+from product import product_info_pb2, product_info_pb2_grpc
 
 
 class ProductInfoServicer(product_info_pb2_grpc.ProductInfoServicer):

@@ -1,6 +1,6 @@
 import grpc
 import logging
-from gen.python.product import product_info_pb2 as pb2, product_info_pb2_grpc as pb2_grpc
+from product import product_info_pb2 as pb2, product_info_pb2_grpc as pb2_grpc
 
 
 def run():

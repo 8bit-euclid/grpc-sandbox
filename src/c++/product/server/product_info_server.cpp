@@ -13,7 +13,7 @@ std::string ProductInfoServer::generateProductId() {
     // Generate a simple UUID-like string using C++23 features
     std::stringstream ss;
     ss << std::hex;
-    
+
     // Generate 8-4-4-4-12 format like UUID
     for (int i = 0; i < 8; ++i) ss << dis_(gen_);
     ss << "-";
@@ -24,7 +24,7 @@ std::string ProductInfoServer::generateProductId() {
     for (int i = 0; i < 4; ++i) ss << dis_(gen_);
     ss << "-";
     for (int i = 0; i < 12; ++i) ss << dis_(gen_);
-    
+
     return ss.str();
 }
 
@@ -45,14 +45,9 @@ grpc::Status ProductInfoServer::addProduct(grpc::ServerContext* context,
         // Set the response
         response->set_value(product_id);
         
-        // Log the addition using C++23 std::format (if available) or fallback
-        #if __cpp_lib_format >= 201907L
-        std::cout << std::format("Product {} : {} - Added.\n", 
-                                product_id, request->name());
-        #else
-        std::cout << "Product " << product_id << " : " << request->name() 
+        // Log the addition
+        std::cout << "Product " << product_id << " : " << request->name()
                   << " - Added." << std::endl;
-        #endif
         
         return grpc::Status::OK;
     } catch (const std::exception& e) {

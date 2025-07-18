@@ -1,0 +1,46 @@
+# Bazel symlinks
+bazel-*
+
+# Git
+.git
+.gitignore
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build artifacts
+*.o
+*.so
+*.a
+*.exe
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Go
+*.test
+*.prof
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# IDE files
+.idea/
+*.swp
+*.swo
+*~

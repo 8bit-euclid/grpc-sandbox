@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libgrpc++-dev \
     sudo \
+    git \
     # Python
     python3 \
     python3-pip \
@@ -38,6 +39,14 @@ RUN wget -O go.tar.gz https://go.dev/dl/go1.24.4.linux-amd64.tar.gz \
 # Install buf
 RUN wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v1.54.0/buf-Linux-x86_64 \
     && chmod +x /usr/local/bin/buf
+
+# Install Bazelisk (recommended way to install and manage Bazel)
+RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 \
+    && chmod +x /usr/local/bin/bazel
+
+# Install Buildifier (Bazel BUILD file formatter and linter)
+RUN wget -O /usr/local/bin/buildifier https://github.com/bazelbuild/buildtools/releases/latest/download/buildifier-linux-amd64 \
+    && chmod +x /usr/local/bin/buildifier
 
 # Set up environment
 ENV PATH="/usr/local/go/bin:${PATH}"

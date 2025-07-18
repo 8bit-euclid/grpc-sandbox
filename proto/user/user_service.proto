@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./user";
+
+// Example message - replace with your actual messages
+message UserServiceRequest {
+  string id = 1;
+}
+
+message UserServiceResponse {
+  string message = 1;
+  bool success = 2;
+}
+
+// Example service - replace with your actual service
+service UserServiceService {
+  rpc GetUserService(UserServiceRequest) returns (UserServiceResponse);
+}
