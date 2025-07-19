@@ -8,15 +8,11 @@ set -euo pipefail
 MAIN_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$MAIN_SCRIPT_DIR/shared-utils.sh"
 
-# Test scripts to run
-TESTS=(
-    "test-config.sh"
-    "test-docker.sh"
-    "test-tools.sh"
-    "test-ports.sh"
-    "test-resources.sh"
-    "test-build.sh"
-)
+# Test scripts to run - dynamically populate from tests directory
+TESTS=()
+while IFS= read -r -d '' file; do
+    TESTS+=("$(basename "$file")")
+done < <(find "$MAIN_SCRIPT_DIR/tests" -maxdepth 1 -type f -name "*.sh" -print0 | sort -z)
 
 # Arrays to track test results
 PASSED=()
@@ -79,7 +75,7 @@ show_summary() {
     fi
 
     # Overall result
-    print_blank_line
+    print_underline
     if [[ $EXIT_CODE -eq 0 ]]; then
         log_success "All ${#PASSED[@]} tests passed!"
     else

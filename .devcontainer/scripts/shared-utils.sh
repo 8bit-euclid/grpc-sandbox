@@ -77,6 +77,11 @@ print_hline() {
     echo "================================"
 }
 
+# Print an underline
+print_underline() {
+    echo "----------------------"
+}
+
 # Test section header
 print_section() {
     echo -e "$1"
