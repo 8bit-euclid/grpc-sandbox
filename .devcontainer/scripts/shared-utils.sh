@@ -5,7 +5,8 @@
 
 # Colors
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
+# YELLOW='\033[38;5;178m'
+YELLOW='\033[0;33m'
 RED='\033[1;31m'
 NC='\033[0m'
 
