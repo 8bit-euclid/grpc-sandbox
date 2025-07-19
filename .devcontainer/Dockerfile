@@ -37,11 +37,11 @@ RUN wget -O go.tar.gz https://go.dev/dl/go1.24.4.linux-amd64.tar.gz \
     && rm go.tar.gz
 
 # Install buf
-RUN wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v1.54.0/buf-Linux-x86_64 \
+RUN wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v1.55.1/buf-Linux-x86_64 \
     && chmod +x /usr/local/bin/buf
 
-# Install Bazelisk (recommended way to install and manage Bazel)
-RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 \
+# Install Bazelisk as the Bazel binary (Bazelisk is a wrapper and version manager for Bazel)
+RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.26.0/bazelisk-linux-amd64 \
     && chmod +x /usr/local/bin/bazel
 
 # Install Buildifier (Bazel BUILD file formatter and linter)
@@ -53,7 +53,8 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 ENV GOPATH="/home/vscode/go"
 ENV PATH="${GOPATH}/bin:${PATH}"
 
-# Add vscode user to sudo group and docker group (if it exists) - must be done as root
+# Add vscode user to sudo group - must be done as root
+# Docker group will be handled by the docker-in-docker feature
 RUN usermod -aG sudo vscode \
     && echo 'vscode ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 

@@ -3,6 +3,12 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest",
+            "enableNonRootDocker": "true"
+        }
+    },
 
     "customizations": {
         "vscode": {
@@ -43,14 +49,16 @@
             "onAutoForward": "notify"
         }
     },
-    "postCreateCommand": "bash .devcontainer/setup-workspace.sh",
+    "postCreateCommand": "bash .devcontainer/scripts/post-create.sh",
     "remoteUser": "vscode",
     "workspaceFolder": "/workspace",
     "mounts": [
         "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
     ],
+    "runArgs": ["--privileged"],
     "containerEnv": {
-        "WORKSPACE_FOLDER": "/workspace"
+        "WORKSPACE_FOLDER": "/workspace",
+        "DEVCONTAINER": "1"
     },
     "updateRemoteUserUID": true
 }

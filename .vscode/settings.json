@@ -1,9 +1,13 @@
 {
-    // Workspace settings that will be shared between host and devcontainer
-    // Add your Augment extension settings here
-    "augment.enableAutoCompletion": true,
-    "augment.enableInlineChat": true,
-    // Add other extension settings as needed
-    "editor.formatOnSave": true,
-    "editor.tabSize": 4
+  // Augment extension settings
+  "augment.enableAutoCompletion": true,
+  "augment.enableInlineChat": true,
+  // Other extension settings
+  "editor.formatOnSave": true,
+  "editor.tabSize": 4,
+  // Go settings
+  "go.toolsManagement.checkForUpdates": "off",
+  "go.useLanguageServer": true,
+  // Bazel settings
+  "bazel.buildifierExecutable": "buildifier"
 }
