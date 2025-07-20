@@ -19,13 +19,13 @@ def run():
             description=description,
             price=price
         ))
-        logging.info(f"Product ID: {response.value} added successfully")
+        logging.info("Product ID: %s added successfully", response.value)
 
         product = stub.getProduct(
             pb2.ProductID(value=response.value))
-        logging.info(f"Product: {product}")
+        logging.info("Product: %s", product)
     except grpc.RpcError as e:
-        logging.error(f"gRPC error: {e.code()} - {e.details()}")
+        logging.error("gRPC error: %s - %s", e.code(), e.details())
 
 
 if __name__ == '__main__':
