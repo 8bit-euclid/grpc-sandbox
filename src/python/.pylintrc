@@ -1,0 +1,5 @@
+; [MASTER]
+; init-hook='import sys; import os; gen_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "gen", "python")); sys.path.insert(0, gen_path) if os.path.exists(gen_path) else None'
+
+[TYPECHECK]
+generated-members=*_pb2,*_pb2_grpc

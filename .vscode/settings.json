@@ -9,5 +9,12 @@
   "go.toolsManagement.checkForUpdates": "off",
   "go.useLanguageServer": true,
   // Bazel settings
-  "bazel.buildifierExecutable": "buildifier"
+  "bazel.buildifierExecutable": "buildifier",
+  // Python settings for generated protobuf files
+  "python.analysis.extraPaths": [
+    "./gen/python"
+  ],
+  // Pylint settings
+  "pylint.enabled": true,
+  "pylint.args": ["--rcfile=src/python/.pylintrc"]
 }
