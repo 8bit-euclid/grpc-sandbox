@@ -1,0 +1,23 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+# Generated C++ protobuf and gRPC library for {{SERVICE_NAME}}
+# This file is regenerated when 'buf generate' runs
+cc_library(
+    name = "{{SERVICE_NAME}}_proto",
+    srcs = glob([
+        "*.pb.cc",
+        "*.grpc.pb.cc",
+    ]),
+    hdrs = glob([
+        "*.pb.h",
+        "*.grpc.pb.h",
+    ]),
+    deps = [
+        "@protobuf//:protobuf",
+        "@grpc//:grpc++",
+    ],
+    visibility = ["//visibility:public"],
+    copts = ["-std=c++23"],
+    strip_include_prefix = ".",
+    include_prefix = "{{SERVICE_NAME}}",
+)

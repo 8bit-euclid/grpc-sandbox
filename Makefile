@@ -3,7 +3,7 @@
 # Configuration
 OUT_DIR = gen
 
-.PHONY: all clean generate help build-python build-go build-cpp build-all run-python-server run-python-client
+.PHONY: all clean generate help build-python build-go build-cpp build-all run-go-server run-go-client run-py-server run-py-client run-cpp-server run-cpp-client
 
 # Default target
 all: generate build-all
@@ -12,6 +12,8 @@ all: generate build-all
 generate: clean
 	@echo "Generating protobuf code with buf..."
 	@buf generate
+	@echo "Creating BUILD files and IDE support for generated code..."
+	@./scripts/create_gen_build_files.sh
 	@echo "Code generation complete!"
 
 # Build Go applications
@@ -35,14 +37,32 @@ build-cpp:
 # Build all applications
 build-all: build-go build-python build-cpp
 
-# Run Python applications with Bazel (no PYTHONPATH needed)
-run-python-server:
-	@echo "Running Python server with Bazel..."
+# Run Go server/client
+run-go-server:
+	@echo "Running Go server..."
+	@bazel run //src/go/product/server
+
+run-go-client:
+	@echo "Running Go client..."
+	@bazel run //src/go/product/client
+
+# Run Python server/client
+run-py-server:
+	@echo "Running Python server..."
 	@bazel run //src/python/product:server
 
-run-python-client:
-	@echo "Running Python client with Bazel..."
+run-py-client:
+	@echo "Running Python client..."
 	@bazel run //src/python/product:client
+
+# Run C++ server/client
+run-cpp-server:
+	@echo "Running C++ server..."
+	@bazel run //src/c++/product/server
+
+run-cpp-client:
+	@echo "Running C++ client..."
+	@bazel run //src/c++/product/client
 
 # Clean generated files and Bazel artifacts
 clean:
@@ -56,20 +76,24 @@ help:
 	@echo "====================================="
 	@echo ""
 	@echo "Available targets:"
-	@echo "  generate            - Generate protobuf code using buf"
-	@echo "  build-python        - Show how to run Python applications with Bazel"
-	@echo "  build-go            - Show how to run Go applications"
-	@echo "  build-cpp           - Build C++ applications using Bazel"
-	@echo "  build-all           - Build all applications"
-	@echo "  run-python-server   - Run Python server with Bazel (auto import resolution)"
-	@echo "  run-python-client   - Run Python client with Bazel (auto import resolution)"
-	@echo "  clean               - Clean generated files and Bazel artifacts"
-	@echo "  help                - Show this help message"
+	@echo "  generate       - Generate protobuf code using buf"
+	@echo "  build-python   - Show how to run Python applications with Bazel"
+	@echo "  build-go       - Show how to run Go applications"
+	@echo "  build-cpp      - Build C++ applications using Bazel"
+	@echo "  build-all      - Build all applications"
+	@echo "  run-go-server  - Run Go server"
+	@echo "  run-go-client  - Run Go client"
+	@echo "  run-py-server  - Run Python server"
+	@echo "  run-py-client  - Run Python client"
+	@echo "  run-cpp-server - Run C++ server"
+	@echo "  run-cpp-client - Run C++ client"
+	@echo "  clean          - Clean generated files and Bazel artifacts"
+	@echo "  help           - Show this help message"
 	@echo ""
 	@echo "The build system uses buf generate to create code directly in the correct locations."
 	@echo "No file copying or import path corrections are needed."
 	@echo ""
 	@echo "Generated files are placed in:"
-	@echo "  gen/python/     - Python protobuf and gRPC files"
-	@echo "  gen/go/         - Go protobuf and gRPC files"
-	@echo "  gen/c++/        - C++ protobuf and gRPC files"
+	@echo "  gen/python/    - Python protobuf and gRPC files"
+	@echo "  gen/go/        - Go protobuf and gRPC files"
+	@echo "  gen/c++/       - C++ protobuf and gRPC files"

@@ -43,5 +43,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not get product: %v", err)
 	}
-	log.Printf("Product: %v", product.String())
+	// Format product information in a readable way
+	log.Println("Product Retrieved Successfully:")
+	log.Printf("  ID:          %s", product.GetId())
+	log.Printf("  Name:        %s", product.GetName())
+	log.Printf("  Description: %s", product.GetDescription())
+	log.Printf("  Price:       $%.2f", product.GetPrice())
 }

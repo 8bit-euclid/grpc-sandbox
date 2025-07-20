@@ -9,7 +9,7 @@ cc_library(
         "product_info_server.h",
     ],
     deps = [
-        "//gen/c++/product:product_info_proto",
+        "//gen/c++/product:product_proto",
         "@grpc//:grpc++",
     ],
     includes = ["."],

@@ -1,18 +1,7 @@
-load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@rules_python//python:defs.bzl", "py_binary")
 
-# Python proto library for product_info (references generated files)
-py_library(
-    name = "product_info_py_proto",
-    srcs = [
-        "//gen/python/product:product_info_pb2.py",
-        "//gen/python/product:product_info_pb2_grpc.py",
-    ],
-    imports = ["gen/python"],
-    deps = [
-        "@pip//grpcio:pkg",
-        "@pip//protobuf:pkg",
-    ],
-)
+# Use the generated proto library from gen/python/product
+# This references the generated library which is recreated by 'buf generate'
 
 # Product server binary
 py_binary(
@@ -20,8 +9,9 @@ py_binary(
     srcs = ["server.py"],
     main = "server.py",
     deps = [
-        ":product_info_py_proto",
+        "//gen/python/product:product_py_proto",
     ],
+    visibility = ["//visibility:public"],
 )
 
 # Product client binary
@@ -30,6 +20,7 @@ py_binary(
     srcs = ["client.py"],
     main = "client.py",
     deps = [
-        ":product_info_py_proto",
+        "//gen/python/product:product_py_proto",
     ],
+    visibility = ["//visibility:public"],
 )
