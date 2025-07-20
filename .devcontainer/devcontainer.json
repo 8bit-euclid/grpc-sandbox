@@ -53,14 +53,12 @@
     "remoteUser": "vscode",
     "workspaceFolder": "/workspace",
     "mounts": [
-        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-        "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind"
+        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
     ],
     "runArgs": ["--privileged"],
     "containerEnv": {
         "WORKSPACE_FOLDER": "/workspace",
-        "DEVCONTAINER": "1",
-        "SSH_AUTH_SOCK": "/ssh-agent"
+        "DEVCONTAINER": "1"
     },
     "updateRemoteUserUID": true
 }

@@ -1,34 +1,30 @@
 # DevContainer Setup with Docker-in-Docker
 
-This devcontainer provides a complete development environment with Docker-in-Docker support for gRPC development.
+This devcontainer is configured with Docker-in-Docker support, allowing you to run Docker commands inside the development container.
 
 ## Features
 
-- **Docker-in-Docker**: Full Docker functionality with non-root access
-- **SSH Agent Forwarding**: Secure access to host SSH keys for Git operations
-- **gRPC Development Tools**: Go, Python, Buf, Bazel, and related tooling
-- **Automated Testing**: Comprehensive validation of the development environment
+- **Docker-in-Docker**: Full Docker functionality inside the devcontainer
+- **gRPC Development Tools**: Go, Python, Buf, Bazel, and other gRPC-related tools
+- **Non-root Docker**: Docker runs without requiring root privileges
+- **Privileged Container**: Necessary for Docker-in-Docker functionality
 
 ## Getting Started
 
 1. **Open in DevContainer**: Use VS Code's "Reopen in Container" command
-2. **Wait for Setup**: The container automatically installs Docker and configures the environment
-3. **Verify Setup**: Post-creation tests run automatically, or run manually:
+2. **Wait for Setup**: The container will automatically install Docker and set up the environment
+3. **Automatic Validation**: Post-creation tests run automatically to verify the setup
+4. **Manual Testing**: You can also run tests manually anytime:
    ```bash
    bash .devcontainer/test-workspace.sh
    ```
 
-## Configuration
+## Docker-in-Docker Configuration
 
-### Docker-in-Docker
-- Uses `ghcr.io/devcontainers/features/docker-in-docker:2`
-- Runs in privileged mode (required for Docker daemon)
-- Non-root Docker access for the `vscode` user
-
-### SSH Agent Forwarding
-- Host SSH agent socket mounted at `/ssh-agent`
-- Environment variable `SSH_AUTH_SOCK` automatically configured
-- Private keys remain secure on the host system
+The devcontainer uses the official Docker-in-Docker feature:
+- **Feature**: `ghcr.io/devcontainers/features/docker-in-docker:2`
+- **Non-root Docker**: Enabled for the `vscode` user
+- **Privileged Mode**: Required for Docker daemon to function
 
 ## Testing
 
@@ -39,57 +35,92 @@ bash .devcontainer/test-workspace.sh
 
 ### Run Individual Test Categories
 ```bash
-# Configuration and tools
+# Configuration validation
 bash .devcontainer/tests/test-config.sh
-bash .devcontainer/tests/test-tools.sh
 
 # Docker functionality
 bash .devcontainer/tests/test-docker.sh
-bash .devcontainer/tests/test-build.sh
 
-# System checks
+# Development tools
+bash .devcontainer/tests/test-tools.sh
+
+# Port availability checks
 bash .devcontainer/tests/test-ports.sh
+
+# System resource checks
 bash .devcontainer/tests/test-resources.sh
 
-# SSH agent forwarding
-bash .devcontainer/scripts/tests/test-ssh-agent.sh
+# Container build testing
+bash .devcontainer/tests/test-build.sh
 ```
 
-The test system validates:
-- Configuration files and development tools
-- Docker installation, daemon, and container operations
-- SSH agent forwarding and Git connectivity
-- Port availability and system resources
+The modular test system includes:
+- **Configuration validation**: JSON syntax, file existence
+- **Docker functionality**: Installation, daemon status, pull, run, and build tests
+- **Tool verification**: Go, Python, Buf, Bazel availability
+- **Port availability**: Check for conflicts on key ports (50051, 8080, 3000)
+- **System resources**: Disk space and memory usage
+- **Build testing**: Verify container can be built and workspace mounting works
 
 ## Troubleshooting
 
-### Docker Issues
-- **Daemon not ready**: Wait up to 60 seconds for Docker-in-Docker to initialize after container startup
-- **Permission errors**: Ensure you're using the `vscode` user; restart the devcontainer if issues persist
-- **Build failures**: Verify Docker Desktop is running on host and check `devcontainer.json` syntax
+### Docker Daemon Not Ready
+If Docker commands fail immediately after container startup:
+- Wait a few seconds for the Docker daemon to initialize
+- The Docker-in-Docker service takes time to start (up to 60 seconds)
+- Check with `docker info` to verify the daemon is running
+- Post-creation tests automatically wait for Docker to be ready
 
-### SSH Agent Issues
-- **Not working**: Ensure SSH agent is running (`ssh-add -l`) and keys are added (`ssh-add ~/.ssh/id_rsa`)
-- **Test connectivity**: Run `bash .devcontainer/scripts/tests/test-ssh-agent.sh`
+### Post-Creation Test Failures
+If tests fail during devcontainer creation:
+- This is often normal during initial Docker-in-Docker setup
+- The devcontainer will still be created successfully
+- Run `bash .devcontainer/test-workspace.sh` manually after setup completes
+- Most issues resolve themselves after services fully initialize
 
-### Test Failures
-- **During creation**: Often normal during initial setup; run tests manually after services initialize
-- **Persistent issues**: Run `bash .devcontainer/test-workspace.sh` to identify specific problems
+### Permission Issues
+If you encounter Docker permission errors:
+- Ensure you're using the `vscode` user (default)
+- The Docker-in-Docker feature automatically handles group permissions
+- Restart the devcontainer if issues persist
 
-## File Structure
+### Build Failures
+If container builds fail:
+- Check that Docker Desktop is running on the host (if applicable)
+- Verify the devcontainer.json syntax is valid
+- Review the Docker daemon logs: `docker system events`
 
-### Configuration
-- `devcontainer.json` - Main devcontainer configuration
-- `Dockerfile` - Base container with development tools
-- `post-create.sh` - Automatic validation script
+## Configuration Files
 
-### Testing
-- `test-workspace.sh` - Main test orchestrator
-- `tests/` - Individual test categories (config, docker, tools, ports, resources, build)
-- `shared-utils.sh` - Common utilities and logging functions
+- **devcontainer.json**: Main devcontainer configuration with Docker-in-Docker feature
+- **Dockerfile**: Base container setup with development tools
+- **shared-utils.sh**: Shared utilities and logging functions for all scripts
+- **post-create.sh**: Post-creation validation script (runs automatically)
+
+### Test Scripts
+
+- **test-workspace.sh**: Main test orchestrator that runs all test categories
+- **tests/test-config.sh**: Configuration file validation (JSON syntax, file existence)
+- **tests/test-docker.sh**: Docker functionality tests (installation, daemon, pull, run, build)
+- **tests/test-tools.sh**: Development tool verification (Go, Python, Buf, Bazel)
+- **tests/test-ports.sh**: Port availability checks
+- **tests/test-resources.sh**: System resource checks (disk space, memory)
+- **tests/test-build.sh**: Container build and workspace mounting tests
+
+### Benefits of Modular Testing
+
+- **Organized Structure**: Test scripts are organized in a dedicated `tests/` directory
+- **Standardized Interface**: Each test script has a `main()` function for consistent execution
+- **Shared Utilities**: Common logging functions and utilities available to all scripts
+- **Consistent Output**: Standardized success/warning/error formatting across all scripts
+- **Focused Testing**: Run only the tests you need during development
+- **Faster Debugging**: Isolate issues to specific categories
+- **Better Maintainability**: Each script has a single responsibility
+- **Reusable Components**: Shared utilities prevent code duplication
+- **Parallel Development**: Multiple developers can work on different test categories
 
 ## Notes
 
-- Container runs in privileged mode for Docker-in-Docker functionality
-- Docker images are isolated from the host system
-- Use `docker system prune` periodically to clean up unused resources
+- The container runs in privileged mode for Docker-in-Docker functionality
+- Docker images built inside the devcontainer are isolated from the host
+- Use `docker system prune` periodically to clean up unused images and containers
