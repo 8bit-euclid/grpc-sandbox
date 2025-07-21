@@ -20,7 +20,8 @@
                 "golang.go",
                 "bazelbuild.vscode-bazel",
                 "augment.vscode-augment",
-                "vscode.git"
+                "vscode.git",
+                "zxh404.vscode-proto3"
             ],
             "settings": {
                 "C_Cpp.default.cppStandard": "c++23",

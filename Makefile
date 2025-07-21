@@ -64,9 +64,9 @@ run-cpp-client:
 	@echo "Running C++ client..."
 	@bazel run //src/c++/product/client
 
-# Clean generated files and Bazel artifacts
+# Clean generated files and Bazel cache
 clean:
-	@echo "Cleaning generated files and Bazel artifacts..."
+	@echo "Cleaning generated files and Bazel cache..."
 	@rm -rf $(OUT_DIR)
 	@bazel clean 2>/dev/null || true
 

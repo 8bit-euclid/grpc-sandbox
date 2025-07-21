@@ -5,12 +5,16 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"strings"
 
 	pb "github.com/8bit-euclid/grpc-sandbox/gen/go/product"
 	"github.com/gofrs/uuid"
+	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // server is used to implement ecommerce/product_info.
@@ -43,4 +47,21 @@ func (s *server) GetProduct(ctx context.Context, in *pb.ProductID) (*pb.Product,
 		return product, status.New(codes.OK, "").Err()
 	}
 	return nil, status.Errorf(codes.NotFound, "Product with ID %s does not exist.", in.Value)
+}
+
+func (s *server) SearchProducts(searchQuery *wrapperspb.StringValue, stream grpc.ServerStreamingServer[pb.Product]) error {
+	for key, product := range s.productMap {
+		log.Print(key, product)
+		itemStr := product.Name + " " + product.Description
+		if strings.Contains(itemStr, searchQuery.Value) {
+			// Send the matching orders in a stream
+			err := stream.Send(product)
+			if err != nil {
+				return fmt.Errorf("error sending message to stream : %v", err)
+			}
+			log.Print("Matching Order Found : " + key)
+			break
+		}
+	}
+	return nil
 }

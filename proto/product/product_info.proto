@@ -1,4 +1,7 @@
 syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
 package product;
 
 option go_package = "./product";
@@ -6,6 +9,7 @@ option go_package = "./product";
 service ProductInfo {
   rpc addProduct(Product) returns (ProductID);
   rpc getProduct(ProductID) returns (Product);
+  rpc searchProducts(google.protobuf.StringValue) returns (stream Product);
 }
 
 message Product {

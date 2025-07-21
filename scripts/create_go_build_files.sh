@@ -6,8 +6,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BUILD_TEMPLATE_FILE="${SCRIPT_DIR}/templates/go_BUILD.template"
-MOD_TEMPLATE_FILE="${SCRIPT_DIR}/templates/go_mod.template"
+BUILD_TEMPLATE_FILE="${SCRIPT_DIR}/templates/go_BUILD.bazel"
+MOD_TEMPLATE_FILE="${SCRIPT_DIR}/templates/go_mod"
 
 if [[ ! -f "$BUILD_TEMPLATE_FILE" ]]; then
     echo "Error: BUILD template file not found: $BUILD_TEMPLATE_FILE"

@@ -15,6 +15,7 @@ py_library(
         "*_pb2_grpc.py",
     ]) + ["__init__.py"],
     visibility = ["//visibility:public"],
+    imports = [".."],
     deps = [
         "@pip//grpcio:pkg",
         "@pip//protobuf:pkg",

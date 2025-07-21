@@ -6,7 +6,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEMPLATE_FILE="${SCRIPT_DIR}/templates/python_BUILD.template"
+TEMPLATE_FILE="${SCRIPT_DIR}/templates/python_BUILD.bazel"
 
 if [[ ! -f "$TEMPLATE_FILE" ]]; then
     echo "Error: Template file not found: $TEMPLATE_FILE"

@@ -12,10 +12,10 @@ scripts/
 ├── create_go_build_files.sh       # Go BUILD file and go.mod generator
 ├── create_python_build_files.sh   # Python BUILD file and package generator
 └── templates/
-    ├── cpp_BUILD.template          # C++ BUILD file template
-    ├── go_BUILD.template           # Go BUILD file template
-    ├── go_mod.template             # Go go.mod file template
-    └── python_BUILD.template       # Python BUILD file template
+    ├── cpp_BUILD.bazel            # C++ BUILD file template
+    ├── go_BUILD.bazel             # Go BUILD file template
+    ├── go_mod                     # Go go.mod file template
+    └── python_BUILD.bazel         # Python BUILD file template
 ```
 
 ## Usage

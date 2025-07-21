@@ -8,6 +8,7 @@ go_binary(
         "//gen/go/product",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_protobuf//types/known/wrapperspb",
     ],
     visibility = ["//visibility:public"],
 )
