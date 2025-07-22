@@ -23,45 +23,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}/devcontainer
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-
       - name: Build and push DevContainer image
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: .devcontainer
           file: .devcontainer/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}
+            ghcr.io/${{ github.repository }}/devcontainer:latest
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache,mode=max
 
-      - name: Install Dependencies
-        run: |
-          npm install -g @devcontainers/cli
-          sudo apt-get update && sudo apt-get install -y jq
-
       - name: Test DevContainer
         run: |
-          # Use the first tag from the metadata output
-          IMAGE_TAG=$(echo '${{ steps.meta.outputs.tags }}' | head -n1)
-          echo "Using image: $IMAGE_TAG"
+          npm install -g @devcontainers/cli
 
-          # Pull the image locally so devcontainer CLI can find it
+          IMAGE_TAG="ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}"
           docker pull "$IMAGE_TAG"
 
-          # Create a temporary devcontainer.json that uses the built image
-          jq --arg image "$IMAGE_TAG" '.image = $image | del(.build)' .devcontainer/devcontainer.json > .devcontainer/devcontainer.temp.json
-          mv .devcontainer/devcontainer.temp.json .devcontainer/devcontainer.json
+          # Update devcontainer.json to use the built image
+          jq --arg image "$IMAGE_TAG" '.image = $image | del(.build)' .devcontainer/devcontainer.json > temp.json
+          mv temp.json .devcontainer/devcontainer.json
 
-          # Test the devcontainer
           devcontainer up --workspace-folder .
