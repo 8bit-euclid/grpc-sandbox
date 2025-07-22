@@ -8,6 +8,7 @@
 
 #include <grpcpp/grpcpp.h>
 #include "gen/c++/product/product_info.grpc.pb.h"
+#include <google/protobuf/wrappers.pb.h>
 
 namespace productinfo {
 
@@ -24,6 +25,10 @@ public:
     grpc::Status getProduct(grpc::ServerContext* context,
                            const product::ProductID* request,
                            product::Product* response) override;
+
+    grpc::Status searchProducts(grpc::ServerContext* context,
+                               const google::protobuf::StringValue* request,
+                               grpc::ServerWriter<product::Product>* writer) override;
 
 private:
     // Generate a UUID-like string for product IDs

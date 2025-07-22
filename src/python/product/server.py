@@ -37,6 +37,20 @@ class ProductInfoServicer(pb2_grpc.ProductInfoServicer):
         context.abort(grpc.StatusCode.NOT_FOUND,
                       f"Product with ID {request.value} does not exist.")
 
+    def searchProducts(self, request, context):
+        """Search products by name and description using server streaming."""
+        search_query = request.value
+
+        for key, product in self.product_map.items():
+            logging.info(f"{key} {product}")
+            item_str = product.name + " " + product.description
+            if search_query.lower() in item_str.lower():
+                # Send the matching product in the stream
+                yield product
+                logging.info(f"Matching Order Found : {key}")
+                # Note: Go implementation has 'break' here, matching that behavior
+                break
+
 
 def serve():
     """Start the gRPC server."""

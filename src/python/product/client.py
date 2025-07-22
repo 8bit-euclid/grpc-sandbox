@@ -6,30 +6,54 @@ the generated protobuf stubs.
 """
 import logging
 import grpc
+from google.protobuf import wrappers_pb2
 from product import product_info_pb2 as pb2, product_info_pb2_grpc as pb2_grpc
 
 
 def run():
-    """Run the gRPC client to add and retrieve a product."""
+    """Run the gRPC client to add and retrieve products, and search them."""
     # Set up a connection to the server.
     channel = grpc.insecure_channel('localhost:50051')
     stub = pb2_grpc.ProductInfoStub(channel)
 
-    # Contact the server and print out its response.
-    name = "Apple iPhone 11"
-    description = "Meet Apple iPhone 11. All-new dual-camera system with Ultra Wide and Night mode."
-    price = 699.00
-
     try:
-        response = stub.addProduct(pb2.Product(
-            name=name,
-            description=description,
-            price=price
-        ))
-        logging.info("Product ID: %s added successfully", response.value)
+        # Add Product 1
+        name1 = "Apple iPhone 11"
+        description1 = ("Meet Apple iPhone 11. All-new dual-camera system "
+                        "with Ultra Wide and Night mode.")
+        price1 = 699.00
 
-        product = stub.getProduct(pb2.ProductID(value=response.value))
-        logging.info("Product: %s", product)
+        response1 = stub.addProduct(pb2.Product(
+            name=name1,
+            description=description1,
+            price=price1
+        ))
+        logging.info("AddProduct Response -> %s", response1.value)
+
+        # Add Product 2
+        name2 = "Google Pixel 4a"
+        description2 = ("The Google Pixel 4a is a compact yet powerful smartphone "
+                        "with a 6.2-inch display and a 12.2MP rear camera.")
+        price2 = 399.00
+
+        response2 = stub.addProduct(pb2.Product(
+            name=name2,
+            description=description2,
+            price=price2
+        ))
+        logging.info("AddProduct Response -> %s", response2.value)
+
+        # Get Product
+        product = stub.getProduct(pb2.ProductID(value=response2.value))
+        logging.info("GetProduct Response -> %s", product)
+
+        # Search Products
+        search_stream = stub.searchProducts(
+            wrappers_pb2.StringValue(value="Apple"))
+        for search_product in search_stream:
+            logging.info("Search Result -> %s", search_product)
+        logging.info("EOF")
+
     except grpc.RpcError as e:
         logging.error("gRPC error: %s", e)
         raise e

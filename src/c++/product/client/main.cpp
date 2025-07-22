@@ -6,6 +6,7 @@
 
 #include <grpcpp/grpcpp.h>
 #include "gen/c++/product/product_info.grpc.pb.h"
+#include <google/protobuf/wrappers.pb.h>
 
 namespace {
     constexpr const char* kServerAddress = "localhost:50051";
@@ -101,6 +102,51 @@ public:
         }
     }
 
+    // Search products using streaming RPC
+    void SearchProducts(const std::string& search_query) {
+        // Prepare the request
+        google::protobuf::StringValue request;
+        request.set_value(search_query);
+
+        // Context for the client
+        grpc::ClientContext context;
+
+        // Get the stream reader
+        std::unique_ptr<grpc::ClientReader<product::Product>> reader(
+            stub_->searchProducts(&context, request));
+
+        // Read from the stream
+        product::Product search_product;
+        while (reader->Read(&search_product)) {
+            #if __cpp_lib_format >= 201907L
+            std::cout << std::format("Search Result -> ID: {}, Name: {}, Description: {}, Price: ${:.2f}\n",
+                                   search_product.id(), search_product.name(),
+                                   search_product.description(), search_product.price());
+            #else
+            std::cout << "Search Result -> ID: " << search_product.id()
+                      << ", Name: " << search_product.name()
+                      << ", Description: " << search_product.description()
+                      << ", Price: $" << std::fixed << std::setprecision(2)
+                      << search_product.price() << std::endl;
+            #endif
+        }
+
+        // Check the final status
+        grpc::Status status = reader->Finish();
+        if (status.ok()) {
+            std::cout << "EOF" << std::endl;
+        } else {
+            #if __cpp_lib_format >= 201907L
+            std::cout << std::format("SearchProducts RPC failed: {} - {}\n",
+                                   static_cast<int>(status.error_code()),
+                                   status.error_message());
+            #else
+            std::cout << "SearchProducts RPC failed: " << status.error_code()
+                      << " - " << status.error_message() << std::endl;
+            #endif
+        }
+    }
+
 private:
     std::unique_ptr<product::ProductInfo::Stub> stub_;
 };
@@ -113,10 +159,14 @@ int main(int argc, char** argv) {
         // Create the client
         ProductInfoClient client(channel);
 
-        // Test data
-        const std::string name = "Apple iPhone 15";
-        const std::string description = "Latest iPhone with advanced features and improved performance.";
-        const float price = 999.99f;
+        // Test data - matching Go implementation
+        const std::string name1 = "Apple iPhone 11";
+        const std::string description1 = "Meet Apple iPhone 11. All-new dual-camera system with Ultra Wide and Night mode.";
+        const float price1 = 699.00f;
+
+        const std::string name2 = "Google Pixel 4a";
+        const std::string description2 = "The Google Pixel 4a is a compact yet powerful smartphone with a 6.2-inch display and a 12.2MP rear camera.";
+        const float price2 = 399.00f;
 
         #if __cpp_lib_format >= 201907L
         std::cout << std::format("Connecting to server at {}\n", kServerAddress);
@@ -124,13 +174,18 @@ int main(int argc, char** argv) {
         std::cout << "Connecting to server at " << kServerAddress << std::endl;
         #endif
 
-        // Add a product
-        std::string product_id = client.AddProduct(name, description, price);
-        
-        if (!product_id.empty()) {
-            // Retrieve the product
-            client.GetProduct(product_id);
+        // Add products
+        std::string id1 = client.AddProduct(name1, description1, price1);
+        std::string id2 = client.AddProduct(name2, description2, price2);
+
+        if (!id1.empty()) {
+            // Get the last product
+            client.GetProduct(id1);
         }
+
+        // Search Products
+        std::cout << "\n--- Searching for 'Apple' ---" << std::endl;
+        client.SearchProducts("Apple");
 
     } catch (const std::exception& e) {
         std::cerr << "Client failed with exception: " << e.what() << std::endl;

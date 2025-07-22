@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <string>
+#include <algorithm>
 
 namespace productinfo {
 
@@ -80,8 +82,52 @@ grpc::Status ProductInfoServer::getProduct(grpc::ServerContext* context,
     }
     
     // Product not found
-    return grpc::Status(grpc::StatusCode::NOT_FOUND, 
+    return grpc::Status(grpc::StatusCode::NOT_FOUND,
                        "Product with ID " + product_id + " does not exist.");
+}
+
+grpc::Status ProductInfoServer::searchProducts(grpc::ServerContext* context,
+                                              const google::protobuf::StringValue* request,
+                                              grpc::ServerWriter<product::Product>* writer) {
+    const std::string& search_query = request->value();
+
+    // Search through all products
+    for (const auto& [key, product] : product_map_) {
+        #if __cpp_lib_format >= 201907L
+        std::cout << std::format("{} {}\n", key, product->name());
+        #else
+        std::cout << key << " " << product->name() << std::endl;
+        #endif
+
+        // Create search string from product name and description
+        std::string item_str = product->name() + " " + product->description();
+
+        // Convert to lowercase for case-insensitive search (like Go's strings.Contains)
+        std::string search_lower = search_query;
+        std::string item_lower = item_str;
+        std::transform(search_lower.begin(), search_lower.end(), search_lower.begin(), ::tolower);
+        std::transform(item_lower.begin(), item_lower.end(), item_lower.begin(), ::tolower);
+
+        if (item_lower.find(search_lower) != std::string::npos) {
+            // Send the matching product in the stream
+            if (!writer->Write(*product)) {
+                return grpc::Status(grpc::StatusCode::INTERNAL,
+                                   "Error sending message to stream");
+            }
+
+            #if __cpp_lib_format >= 201907L
+            std::cout << std::format("Matching Order Found : {}\n", key);
+            #else
+            std::cout << "Matching Order Found : " << key << std::endl;
+            #endif
+
+            // Note: Go implementation has 'break' here, but that seems like a bug
+            // since it only returns the first match. We'll match the Go behavior for consistency
+            break;
+        }
+    }
+
+    return grpc::Status::OK;
 }
 
 } // namespace productinfo
