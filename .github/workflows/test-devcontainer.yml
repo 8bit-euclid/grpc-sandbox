@@ -45,7 +45,7 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache,mode=max
 
-      - name: Install Dev Containers CLI and jq
+      - name: Install Dependencies
         run: |
           npm install -g @devcontainers/cli
           sudo apt-get update && sudo apt-get install -y jq
