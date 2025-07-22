@@ -112,12 +112,12 @@ public:
         grpc::ClientContext context;
 
         // Get the stream reader
-        std::unique_ptr<grpc::ClientReader<product::Product>> reader(
+        std::unique_ptr<grpc::ClientReader<product::Product>> stream(
             stub_->searchProducts(&context, request));
 
         // Read from the stream
         product::Product search_product;
-        while (reader->Read(&search_product)) {
+        while (stream->Read(&search_product)) {
             #if __cpp_lib_format >= 201907L
             std::cout << std::format("Search Result -> ID: {}, Name: {}, Description: {}, Price: ${:.2f}\n",
                                    search_product.id(), search_product.name(),
@@ -132,10 +132,8 @@ public:
         }
 
         // Check the final status
-        grpc::Status status = reader->Finish();
-        if (status.ok()) {
-            std::cout << "EOF" << std::endl;
-        } else {
+        grpc::Status status = stream->Finish();
+        if (!status.ok()) {
             #if __cpp_lib_format >= 201907L
             std::cout << std::format("SearchProducts RPC failed: {} - {}\n",
                                    static_cast<int>(status.error_code()),
@@ -178,14 +176,20 @@ int main(int argc, char** argv) {
         std::string id1 = client.AddProduct(name1, description1, price1);
         std::string id2 = client.AddProduct(name2, description2, price2);
 
-        if (!id1.empty()) {
-            // Get the last product
-            client.GetProduct(id1);
-        }
+        // =========================================
+	    // Get Product: Unary RPC
+        client.GetProduct(id1);
 
-        // Search Products
+        // =========================================
+	    // Search products: Server streaming 
         std::cout << "\n--- Searching for 'Apple' ---" << std::endl;
         client.SearchProducts("Apple");
+
+        // =========================================
+	    // Update products: Client streaming 
+
+        // =========================================
+	    // Process products: Bi-directional streaming 
 
     } catch (const std::exception& e) {
         std::cerr << "Client failed with exception: " << e.what() << std::endl;

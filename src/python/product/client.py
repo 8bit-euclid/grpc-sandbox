@@ -41,16 +41,23 @@ def run():
         ))
         logging.info("AddProduct Response -> %s", response2.value)
 
-        # Get Product
+        # =========================================
+        # Get Product: Unary RPC
         product = stub.getProduct(pb2.ProductID(value=response2.value))
         logging.info("GetProduct Response -> %s", product)
 
-        # Search Products
+        # =========================================
+        # Search Products: Server streaming
         search_stream = stub.searchProducts(
             wrappers_pb2.StringValue(value="Apple"))
         for search_product in search_stream:
             logging.info("Search Result -> %s", search_product)
-        logging.info("EOF")
+
+        # =========================================
+        # Update products: Client streaming
+
+        # =========================================
+        # Process products: Bi-directional streaming
 
     except grpc.RpcError as e:
         logging.error("gRPC error: %s", e)

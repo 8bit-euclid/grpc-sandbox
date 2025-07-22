@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"strings"
 
@@ -23,7 +24,7 @@ type server struct {
 	productMap map[string]*pb.Product
 }
 
-// AddProduct implements ecommerce.AddProduct
+// Client-side Streaming RPC
 func (s *server) AddProduct(ctx context.Context,
 							in *pb.Product) (*pb.ProductID, error) {
 	out, err := uuid.NewV4()
@@ -39,7 +40,7 @@ func (s *server) AddProduct(ctx context.Context,
 	return &pb.ProductID{Value: in.Id}, status.New(codes.OK, "").Err()
 }
 
-// GetProduct implements ecommerce.GetProduct
+// Unary RPC
 func (s *server) GetProduct(ctx context.Context, in *pb.ProductID) (*pb.Product, error) {
 	product, exists := s.productMap[in.Value]
 	if exists && product != nil {
@@ -49,6 +50,7 @@ func (s *server) GetProduct(ctx context.Context, in *pb.ProductID) (*pb.Product,
 	return nil, status.Errorf(codes.NotFound, "Product with ID %s does not exist.", in.Value)
 }
 
+// Server-side Streaming RPC
 func (s *server) SearchProducts(searchQuery *wrapperspb.StringValue, stream grpc.ServerStreamingServer[pb.Product]) error {
 	for key, product := range s.productMap {
 		log.Print(key, product)
@@ -65,6 +67,23 @@ func (s *server) SearchProducts(searchQuery *wrapperspb.StringValue, stream grpc
 	return nil
 }
 
+// Client-side Streaming RPC
 func (s *server) UpdateProducts(stream grpc.ClientStreamingServer[pb.Product, wrapperspb.StringValue]) error {
-	return nil
+	ordersStr := "Updated Order IDs : "
+	for {
+		product, err := stream.Recv()
+		if err == io.EOF {
+			// Finished reading the order stream.
+			return stream.SendAndClose(&wrapperspb.StringValue{Value: "Orders processed " + ordersStr})
+		}
+
+		if err != nil {
+			return err
+		}
+		// Update order
+		s.productMap[product.Id] = product
+
+		log.Printf("Order ID : %s - %s", product.Id, "Updated")
+		ordersStr += product.Id + ", "
+	}
 }
