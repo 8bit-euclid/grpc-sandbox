@@ -13,11 +13,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Install Dev Containers CLI
         run: npm install -g @devcontainers/cli
 
+      - name: Cache DevContainer layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-devcontainer-${{ hashFiles('.devcontainer/**') }}
+          restore-keys: |
+            ${{ runner.os }}-devcontainer-
+
       - name: Build DevContainer
-        run: devcontainer build --workspace-folder . --cache-from type=gha --cache-to type=gha,mode=max
+        run: |
+          devcontainer build --workspace-folder . \
+            --cache-from type=local,src=/tmp/.buildx-cache \
+            --cache-to type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Test DevContainer
         run: devcontainer up --workspace-folder .
