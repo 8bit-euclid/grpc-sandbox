@@ -35,9 +35,10 @@ jobs:
           docker buildx create --use --name devcontainer-builder --driver docker-container || true
           docker buildx use devcontainer-builder
 
-          # Build with explicit cache configuration
+          # Build with DevContainer CLI's native cache options
           devcontainer build --workspace-folder . \
-            --buildx-args "--cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max"
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache-new,mode=max"
 
       - name: Replace cache
         run: |
