@@ -1,20 +1,21 @@
 name: Test DevContainer
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Build DevContainer"]
+    types: [completed]
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     permissions:
       contents: read
-      packages: write
+      packages: read
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -23,20 +24,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push DevContainer image
-        id: build
-        uses: docker/build-push-action@v5
+      - name: Generate devcontainer cache key
+        id: devcontainer-cache-key
+        run: |
+          # Create a hash of all devcontainer-related files
+          CACHE_KEY=$(find .devcontainer -type f \( -name "*.json" -o -name "*.sh" -o -name "Dockerfile" \) -exec sha256sum {} \; | sort | sha256sum | cut -d' ' -f1)
+          echo "cache-key=devcontainer-test-$CACHE_KEY" >> $GITHUB_OUTPUT
+          echo "Cache key: devcontainer-test-$CACHE_KEY"
+
+      - name: Check devcontainer test cache
+        id: cache-test
+        uses: actions/cache@v4
         with:
-          context: .devcontainer
-          file: .devcontainer/Dockerfile
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}
-            ghcr.io/${{ github.repository }}/devcontainer:latest
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache,mode=max
+          path: .devcontainer-test-success
+          key: ${{ steps.devcontainer-cache-key.outputs.cache-key }}
 
       - name: Test DevContainer
+        if: steps.cache-test.outputs.cache-hit != 'true'
         run: |
           npm install -g @devcontainers/cli
 
@@ -48,3 +52,10 @@ jobs:
           mv temp.json .devcontainer/devcontainer.json
 
           devcontainer up --workspace-folder .
+
+          # Mark test as successful
+          echo "DevContainer test passed at $(date)" > .devcontainer-test-success
+
+      - name: Cache test result
+        if: steps.cache-test.outputs.cache-hit != 'true'
+        run: echo "DevContainer test completed and cached"
