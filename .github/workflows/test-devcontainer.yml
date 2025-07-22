@@ -45,14 +45,19 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache,mode=max
 
-      - name: Install Dev Containers CLI
-        run: npm install -g @devcontainers/cli
+      - name: Install Dev Containers CLI and jq
+        run: |
+          npm install -g @devcontainers/cli
+          sudo apt-get update && sudo apt-get install -y jq
 
       - name: Test DevContainer
         run: |
           # Update devcontainer.json to use the built image
           IMAGE_TAG="ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}"
           echo "Using image: $IMAGE_TAG"
+
+          # Pull the image locally so devcontainer CLI can find it
+          docker pull "$IMAGE_TAG"
 
           # Create a temporary devcontainer.json that uses the built image
           jq --arg image "$IMAGE_TAG" '.image = $image | del(.build)' .devcontainer/devcontainer.json > .devcontainer/devcontainer.temp.json
