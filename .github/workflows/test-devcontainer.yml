@@ -28,15 +28,23 @@ jobs:
             ${{ runner.os }}-devcontainer-
 
       - name: Build DevContainer
+        env:
+          BUILDX_NO_DEFAULT_ATTESTATIONS: 1
         run: |
+          # Configure Docker to use buildx with cache
+          docker buildx create --use --name devcontainer-builder --driver docker-container || true
+          docker buildx use devcontainer-builder
+
+          # Build with explicit cache configuration
           devcontainer build --workspace-folder . \
-            --cache-from type=local,src=/tmp/.buildx-cache \
-            --cache-to type=local,dest=/tmp/.buildx-cache-new,mode=max
+            --buildx-args "--cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max"
 
       - name: Replace cache
         run: |
           rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          if [ -d "/tmp/.buildx-cache-new" ]; then
+            mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          fi
 
       - name: Test DevContainer
         run: devcontainer up --workspace-folder .
