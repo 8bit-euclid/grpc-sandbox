@@ -6,7 +6,6 @@ go_library(
     name = "{{SERVICE_NAME}}",
     srcs = glob([
         "*.pb.go",
-        "*_grpc.pb.go",
     ]),
     importpath = "{{IMPORT_PATH}}",
     visibility = ["//visibility:public"],

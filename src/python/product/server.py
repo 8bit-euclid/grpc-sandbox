@@ -47,9 +47,7 @@ class ProductInfoServicer(pb2_grpc.ProductInfoServicer):
             if search_query.lower() in item_str.lower():
                 # Send the matching product in the stream
                 yield product
-                logging.info(f"Matching Order Found : {key}")
-                # Note: Go implementation has 'break' here, matching that behavior
-                break
+                logging.info(f"Matching Product Found : {key}")
 
 
 def serve():

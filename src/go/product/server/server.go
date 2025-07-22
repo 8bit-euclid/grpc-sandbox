@@ -54,14 +54,17 @@ func (s *server) SearchProducts(searchQuery *wrapperspb.StringValue, stream grpc
 		log.Print(key, product)
 		itemStr := product.Name + " " + product.Description
 		if strings.Contains(itemStr, searchQuery.Value) {
-			// Send the matching orders in a stream
+			// Send the matching products in a stream
 			err := stream.Send(product)
 			if err != nil {
 				return fmt.Errorf("error sending message to stream : %v", err)
 			}
-			log.Print("Matching Order Found : " + key)
-			break
+			log.Print("Matching Product Found : " + key)
 		}
 	}
+	return nil
+}
+
+func (s *server) UpdateProducts(stream grpc.ClientStreamingServer[pb.Product, wrapperspb.StringValue]) error {
 	return nil
 }

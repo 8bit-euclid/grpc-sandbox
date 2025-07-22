@@ -5,8 +5,10 @@ cc_binary(
     srcs = ["main.cpp"],
     deps = [
         "//gen/c++/product:product_proto",
-        "@grpc//:grpc++",
+        "@grpc//:grpc++_unsecure",
     ],
     copts = ["-std=c++23"],
     visibility = ["//visibility:public"],
+    # Optimize linking for development
+    linkstatic = False,
 )

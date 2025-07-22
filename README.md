@@ -11,9 +11,10 @@ Multi-language gRPC code generation using Buf and Bazel. Generates Python, Go, a
 make generate
 
 # Run example applications
-make run-py-server    # Python server
-make run-go-client    # Go client
-make run-cpp-server   # C++ server
+make run-py-server        # Python server
+make run-go-client        # Go client
+make run-cpp-server-dev   # C++ server (fast build - recommended)
+make run-cpp-server       # C++ server (optimized build)
 
 # Clean generated code and Bazel cache
 make clean

@@ -10,6 +10,7 @@ service ProductInfo {
   rpc addProduct(Product) returns (ProductID);
   rpc getProduct(ProductID) returns (Product);
   rpc searchProducts(google.protobuf.StringValue) returns (stream Product);
+  rpc updateProducts(stream Product) returns (google.protobuf.StringValue);
 }
 
 message Product {

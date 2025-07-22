@@ -2,8 +2,7 @@ load("@rules_python//python:defs.bzl", "py_library")
 
 # Export generated Python files so they can be used by other packages
 exports_files(glob([
-    "*_pb2.py",
-    "*_pb2_grpc.py",
+    "*_pb2*.py",
 ]))
 
 # Generated Python protobuf and gRPC library for {{SERVICE_NAME}}
@@ -11,8 +10,7 @@ exports_files(glob([
 py_library(
     name = "{{SERVICE_NAME}}_py_proto",
     srcs = glob([
-        "*_pb2.py",
-        "*_pb2_grpc.py",
+        "*_pb2*.py",
     ]) + ["__init__.py"],
     visibility = ["//visibility:public"],
     imports = [".."],

@@ -88,7 +88,7 @@ grpc::Status ProductInfoServer::getProduct(grpc::ServerContext* context,
 
 grpc::Status ProductInfoServer::searchProducts(grpc::ServerContext* context,
                                               const google::protobuf::StringValue* request,
-                                              grpc::ServerWriter<product::Product>* writer) {
+                                              grpc::ServerWriter<product::Product>* stream) {
     const std::string& search_query = request->value();
 
     // Search through all products
@@ -110,20 +110,16 @@ grpc::Status ProductInfoServer::searchProducts(grpc::ServerContext* context,
 
         if (item_lower.find(search_lower) != std::string::npos) {
             // Send the matching product in the stream
-            if (!writer->Write(*product)) {
+            if (!stream->Write(*product)) {
                 return grpc::Status(grpc::StatusCode::INTERNAL,
                                    "Error sending message to stream");
             }
 
             #if __cpp_lib_format >= 201907L
-            std::cout << std::format("Matching Order Found : {}\n", key);
+            std::cout << std::format("Matching Product Found : {}\n", key);
             #else
-            std::cout << "Matching Order Found : " << key << std::endl;
+            std::cout << "Matching Product Found : " << key << std::endl;
             #endif
-
-            // Note: Go implementation has 'break' here, but that seems like a bug
-            // since it only returns the first match. We'll match the Go behavior for consistency
-            break;
         }
     }
 

@@ -161,11 +161,11 @@ int main(int argc, char** argv) {
 
         // Test data - matching Go implementation
         const std::string name1 = "Apple iPhone 11";
-        const std::string description1 = "Meet Apple iPhone 11. All-new dual-camera system with Ultra Wide and Night mode.";
+        const std::string description1 = "C++ client";
         const float price1 = 699.00f;
 
         const std::string name2 = "Google Pixel 4a";
-        const std::string description2 = "The Google Pixel 4a is a compact yet powerful smartphone with a 6.2-inch display and a 12.2MP rear camera.";
+        const std::string description2 = "C++ client";
         const float price2 = 399.00f;
 
         #if __cpp_lib_format >= 201907L

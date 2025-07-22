@@ -35,7 +35,7 @@ func main() {
 	
 	// Add Product 1
 	name := "Apple iPhone 11"
-	description := "Meet Apple iPhone 11. All-new dual-camera system with Ultra Wide and Night mode."
+	description := "Go client"
 	price := float32(699.00)
 	r, err := c.AddProduct(ctx, &pb.Product{Name: name, Description: description, Price: price})
 	if err != nil {
@@ -45,7 +45,7 @@ func main() {
 
 	// Add Product 2
 	name = "Google Pixel 4a"
-	description = "The Google Pixel 4a is a compact yet powerful smartphone with a 6.2-inch display and a 12.2MP rear camera."
+	description = "Go client"
 	price = float32(399.00)
 	r, err = c.AddProduct(ctx, &pb.Product{Name: name, Description: description, Price: price})
 	if err != nil {

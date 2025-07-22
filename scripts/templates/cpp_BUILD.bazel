@@ -6,11 +6,9 @@ cc_library(
     name = "{{SERVICE_NAME}}_proto",
     srcs = glob([
         "*.pb.cc",
-        "*.grpc.pb.cc",
     ]),
     hdrs = glob([
         "*.pb.h",
-        "*.grpc.pb.h",
     ]),
     deps = [
         "@protobuf//:protobuf",

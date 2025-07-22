@@ -10,10 +10,13 @@ cc_library(
     ],
     deps = [
         "//gen/c++/product:product_proto",
-        "@grpc//:grpc++",
+        "@grpc//:grpc++_unsecure",
     ],
     includes = ["."],
     copts = ["-std=c++23"],
+    visibility = ["//visibility:public"],
+    # Optimize for incremental builds
+    linkstatic = True,
 )
 
 cc_binary(
@@ -21,8 +24,9 @@ cc_binary(
     srcs = ["main.cpp"],
     deps = [
         ":product_info_server_lib",
-        "@grpc//:grpc++",
         "@grpc//:grpc++_reflection",
     ],
     copts = ["-std=c++23"],
+    # Optimize linking for development
+    linkstatic = False,
 )

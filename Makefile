@@ -3,10 +3,17 @@
 # Configuration
 OUT_DIR = gen
 
-.PHONY: all clean generate help build-python build-go build-cpp build-all run-go-server run-go-client run-py-server run-py-client run-cpp-server run-cpp-client
+# Language-specific configurations
+GO_PATH = //src/go/product
+PY_PATH = //src/python/product
+CPP_PATH = //src/c++/product
+
+.PHONY: all clean generate help
+.PHONY: run-go-server run-go-client run-py-server run-py-client
+.PHONY: run-cpp-server run-cpp-client run-cpp-server-dev run-cpp-client-dev
 
 # Default target
-all: generate build-all
+all: generate
 
 # Generate protobuf code using buf
 generate: clean
@@ -16,79 +23,79 @@ generate: clean
 	@./scripts/create_gen_build_files.sh
 	@echo "Code generation complete!"
 
-# Build Go applications
-build-go:
-	@echo "Building Go applications..."
-	@echo "Server: go run src/go/product/server/main.go src/go/product/server/server.go"
-	@echo "Client: go run src/go/product/client/main.go"
+# Generic run function - internal use only
+define run_target
+	@echo "Running $(1) $(2)$(if $(3), ($(3) build),)..."
+	@bazel run $(if $(3),--config=$(3) )$(4)
+endef
 
-# Build Python applications with Bazel (automatic import resolution)
-build-python:
-	@echo "Building Python applications with Bazel..."
-	@echo "Bazel automatically resolves Python import paths"
-	@echo "Server: bazel run //src/python/product:server"
-	@echo "Client: bazel run //src/python/product:client"
+# Generic build function - internal use only
+define build_target
+	@echo "Building $(1) targets$(if $(2), for $(2),)..."
+	@bazel build $(if $(2),--config=$(2) )$(3)
+endef
 
-# Build C++ applications using Bazel
-build-cpp:
-	@echo "Building C++ applications with Bazel..."
-	@bazel build //src/c++/product/server:server
-
-# Build all applications
-build-all: build-go build-python build-cpp
-
-# Run Go server/client
+# Language-specific run targets
 run-go-server:
-	@echo "Running Go server..."
-	@bazel run //src/go/product/server
+	$(call run_target,Go,server,,$(GO_PATH)/server)
 
 run-go-client:
-	@echo "Running Go client..."
-	@bazel run //src/go/product/client
+	$(call run_target,Go,client,,$(GO_PATH)/client)
 
-# Run Python server/client
 run-py-server:
-	@echo "Running Python server..."
-	@bazel run //src/python/product:server
+	$(call run_target,Python,server,,$(PY_PATH):server)
 
 run-py-client:
-	@echo "Running Python client..."
-	@bazel run //src/python/product:client
+	$(call run_target,Python,client,,$(PY_PATH):client)
 
-# Run C++ server/client
 run-cpp-server:
-	@echo "Running C++ server..."
-	@bazel run //src/c++/product/server
+	$(call run_target,C++,server,,$(CPP_PATH)/server)
 
 run-cpp-client:
-	@echo "Running C++ client..."
-	@bazel run //src/c++/product/client
+	$(call run_target,C++,client,,$(CPP_PATH)/client)
+
+run-cpp-server-dev:
+	$(call run_target,C++,server,dev,$(CPP_PATH)/server)
+
+run-cpp-client-dev:
+	$(call run_target,C++,client,dev,$(CPP_PATH)/client)
 
 # Clean generated files and Bazel cache
 clean:
 	@echo "Cleaning generated files and Bazel cache..."
 	@rm -rf $(OUT_DIR)
-	@bazel clean 2>/dev/null || true
+	@bazel clean --expunge 2>/dev/null || true
 
 # Show help information
 help:
 	@echo "Buf-based Proto Code Generation System"
 	@echo "====================================="
 	@echo ""
-	@echo "Available targets:"
+	@echo "Core targets:"
 	@echo "  generate       - Generate protobuf code using buf"
-	@echo "  build-python   - Show how to run Python applications with Bazel"
-	@echo "  build-go       - Show how to run Go applications"
-	@echo "  build-cpp      - Build C++ applications using Bazel"
-	@echo "  build-all      - Build all applications"
-	@echo "  run-go-server  - Run Go server"
-	@echo "  run-go-client  - Run Go client"
-	@echo "  run-py-server  - Run Python server"
-	@echo "  run-py-client  - Run Python client"
-	@echo "  run-cpp-server - Run C++ server"
-	@echo "  run-cpp-client - Run C++ client"
 	@echo "  clean          - Clean generated files and Bazel artifacts"
 	@echo "  help           - Show this help message"
+	@echo ""
+	@echo "Generic parameterized targets:"
+	@echo "  run LANG=<go|py|cpp> TYPE=<server|client> [CONFIG=<dev>]"
+	@echo "    Examples:"
+	@echo "      make run LANG=go TYPE=server"
+	@echo "      make run LANG=cpp TYPE=client CONFIG=dev"
+	@echo ""
+	@echo "  build-dev LANG=<go|py|cpp>"
+	@echo "    Examples:"
+	@echo "      make build-dev LANG=cpp"
+	@echo ""
+	@echo "Legacy specific targets (still supported):"
+	@echo "  run-go-server      - Run Go server"
+	@echo "  run-go-client      - Run Go client"
+	@echo "  run-py-server      - Run Python server"
+	@echo "  run-py-client      - Run Python client"
+	@echo "  run-cpp-server     - Run C++ server (optimized build)"
+	@echo "  run-cpp-client     - Run C++ client (optimized build)"
+	@echo "  run-cpp-server-dev - Run C++ server (development build)"
+	@echo "  run-cpp-client-dev - Run C++ client (development build)"
+	@echo "  build-cpp-dev      - Build C++ targets for development"
 	@echo ""
 	@echo "The build system uses buf generate to create code directly in the correct locations."
 	@echo "No file copying or import path corrections are needed."

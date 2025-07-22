@@ -1,7 +1,117 @@
+# ============================================================================
+# BAZEL BUILD OPTIMIZATION CONFIGURATION
+# ============================================================================
+
 # C++23 support
 build --cxxopt=-std=c++23
 build --host_cxxopt=-std=c++23
 
-# Optimization flags
-build --copt=-O2
-build --cxxopt=-O2
+# ============================================================================
+# PERFORMANCE OPTIMIZATIONS
+# ============================================================================
+
+# Enable build caching for faster incremental builds
+build --disk_cache=~/.cache/bazel-disk-cache
+build --repository_cache=~/.cache/bazel-repo-cache
+
+# Parallel compilation settings
+build --jobs=auto
+build --local_resources=cpu=HOST_CPUS
+build --local_resources=memory=HOST_RAM*0.8
+
+# Enable sandboxing for better caching
+build --spawn_strategy=sandboxed
+build --genrule_strategy=sandboxed
+
+# Optimize linking
+build --linkopt=-Wl,--build-id=md5
+build --linkopt=-Wl,--hash-style=gnu
+
+# ============================================================================
+# DEVELOPMENT BUILD CONFIGURATION (Fast iteration)
+# ============================================================================
+
+# Fast development builds with minimal optimization
+build:dev --copt=-O0
+build:dev --cxxopt=-O0
+build:dev --copt=-g
+build:dev --cxxopt=-g
+build:dev --strip=never
+build:dev --compilation_mode=dbg
+
+# ============================================================================
+# RELEASE BUILD CONFIGURATION (Optimized)
+# ============================================================================
+
+# Release builds with full optimization
+build:release --copt=-O3
+build:release --cxxopt=-O3
+build:release --copt=-DNDEBUG
+build:release --cxxopt=-DNDEBUG
+build:release --compilation_mode=opt
+build:release --strip=always
+
+# ============================================================================
+# DEFAULT BUILD CONFIGURATION (Balanced)
+# ============================================================================
+
+# Default optimization flags (balanced between speed and build time)
+build --copt=-O1
+build --cxxopt=-O1
+build --compilation_mode=fastbuild
+
+# ============================================================================
+# COMPILER OPTIMIZATIONS
+# ============================================================================
+
+# Enable faster compilation
+build --cxxopt=-pipe
+build --copt=-pipe
+
+# Reduce template instantiation depth for faster compilation
+build --cxxopt=-ftemplate-backtrace-limit=10
+
+# Enable parallel code generation
+build --cxxopt=-fno-omit-frame-pointer
+
+# ============================================================================
+# DEPENDENCY OPTIMIZATIONS
+# ============================================================================
+
+# Optimize protobuf compilation
+build --cxxopt=-DPROTOBUF_USE_DLLS=0
+build --define=use_fast_cpp_protos=true
+
+# gRPC optimizations - Disable unnecessary features to reduce build time
+build --define=grpc_no_ares=true
+build --define=grpc_no_xds=true
+build --define=grpc_no_rls=true
+build --define=grpc_no_binder=true
+build --define=grpc_no_opencensus=true
+build --define=grpc_no_opentelemetry=true
+build --define=grpc_no_csm_observability=true
+build --define=grpc_no_rbe=true
+
+# ============================================================================
+# INCREMENTAL BUILD OPTIMIZATIONS
+# ============================================================================
+
+# Enable action caching
+build --action_cache_store_output_metadata
+build --guard_against_concurrent_changes
+
+# Optimize for incremental builds
+build --experimental_reuse_sandbox_directories
+build --experimental_sandbox_async_tree_delete_idle_threads=4
+
+# ============================================================================
+# LOGGING AND DEBUGGING
+# ============================================================================
+
+# Reduce build noise
+build --show_progress_rate_limit=5
+build --curses=yes
+build --color=yes
+
+# Show timing information
+build --experimental_show_artifacts
