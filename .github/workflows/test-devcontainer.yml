@@ -52,8 +52,8 @@ jobs:
 
       - name: Test DevContainer
         run: |
-          # Update devcontainer.json to use the built image
-          IMAGE_TAG="ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}"
+          # Use the first tag from the metadata output
+          IMAGE_TAG=$(echo '${{ steps.meta.outputs.tags }}' | head -n1)
           echo "Using image: $IMAGE_TAG"
 
           # Pull the image locally so devcontainer CLI can find it
