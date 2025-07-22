@@ -1,4 +1,4 @@
-name: Test DevContainer
+name: Build and Test DevContainer
 
 on:
   push:
