@@ -30,6 +30,10 @@ public:
                                const google::protobuf::StringValue* request,
                                grpc::ServerWriter<product::Product>* writer) override;
 
+    grpc::Status updateProducts(grpc::ServerContext* context,
+                               grpc::ServerReader<product::Product>* reader,
+                               google::protobuf::StringValue* response) override;
+
 private:
     // Generate a UUID-like string for product IDs
     std::string generateProductId();

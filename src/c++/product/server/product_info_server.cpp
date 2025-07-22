@@ -126,4 +126,31 @@ grpc::Status ProductInfoServer::searchProducts(grpc::ServerContext* context,
     return grpc::Status::OK;
 }
 
+grpc::Status ProductInfoServer::updateProducts(grpc::ServerContext* context,
+                                              grpc::ServerReader<product::Product>* reader,
+                                              google::protobuf::StringValue* response) {
+    std::string orders_str = "Updated Order IDs : ";
+    product::Product product;
+
+    // Read products from the stream
+    while (reader->Read(&product)) {
+        // Update product in the map
+        product_map_[product.id()] = std::make_unique<product::Product>(product);
+
+        // Log the update using C++23 std::format (if available) or fallback
+        #if __cpp_lib_format >= 201907L
+        std::cout << std::format("Order ID : {} - Updated\n", product.id());
+        #else
+        std::cout << "Order ID : " << product.id() << " - Updated" << std::endl;
+        #endif
+
+        orders_str += product.id() + ", ";
+    }
+
+    // Set the response
+    response->set_value("Orders processed " + orders_str);
+
+    return grpc::Status::OK;
+}
+
 } // namespace productinfo

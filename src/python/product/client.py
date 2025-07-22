@@ -55,6 +55,26 @@ def run():
 
         # =========================================
         # Update products: Client streaming
+        upd_prod1 = pb2.Product(
+            id="101",
+            name="Samsung Galaxy S20",
+            description="Python client",
+            price=799.00
+        )
+        upd_prod2 = pb2.Product(
+            id="103",
+            name="Apple Watch S4",
+            description="Python client",
+            price=399.00
+        )
+
+        def generate_products():
+            """Generator function to yield products for streaming."""
+            yield upd_prod1
+            yield upd_prod2
+
+        update_result = stub.updateProducts(generate_products())
+        logging.info("Update Result -> %s", update_result.value)
 
         # =========================================
         # Process products: Bi-directional streaming

@@ -3,6 +3,7 @@
 #include <string>
 #include <format>
 #include <iomanip>
+#include <vector>
 
 #include <grpcpp/grpcpp.h>
 #include "gen/c++/product/product_info.grpc.pb.h"
@@ -145,6 +146,55 @@ public:
         }
     }
 
+    // Update products using client streaming RPC
+    void UpdateProducts(const std::vector<product::Product>& products) {
+        // Context for the client
+        grpc::ClientContext context;
+
+        // Container for the response
+        google::protobuf::StringValue response;
+
+        // Get the stream writer
+        std::unique_ptr<grpc::ClientWriter<product::Product>> stream(
+            stub_->updateProducts(&context, &response));
+
+        // Send products through the stream
+        for (const auto& product : products) {
+            if (!stream->Write(product)) {
+                // Stream has been closed
+                break;
+            }
+            #if __cpp_lib_format >= 201907L
+            std::cout << std::format("Sent product for update: ID: {}, Name: {}\n",
+                                   product.id(), product.name());
+            #else
+            std::cout << "Sent product for update: ID: " << product.id()
+                      << ", Name: " << product.name() << std::endl;
+            #endif
+        }
+
+        // Close the stream and get the response
+        stream->WritesDone();
+        grpc::Status status = stream->Finish();
+
+        if (status.ok()) {
+            #if __cpp_lib_format >= 201907L
+            std::cout << std::format("Update Result -> {}\n", response.value());
+            #else
+            std::cout << "Update Result -> " << response.value() << std::endl;
+            #endif
+        } else {
+            #if __cpp_lib_format >= 201907L
+            std::cout << std::format("UpdateProducts RPC failed: {} - {}\n",
+                                   static_cast<int>(status.error_code()),
+                                   status.error_message());
+            #else
+            std::cout << "UpdateProducts RPC failed: " << status.error_code()
+                      << " - " << status.error_message() << std::endl;
+            #endif
+        }
+    }
+
 private:
     std::unique_ptr<product::ProductInfo::Stub> stub_;
 };
@@ -186,10 +236,30 @@ int main(int argc, char** argv) {
         client.SearchProducts("Apple");
 
         // =========================================
-	    // Update products: Client streaming 
+	    // Update products: Client streaming
+        std::vector<product::Product> update_products;
+
+        // Create products to update - matching Go implementation
+        product::Product upd_prod1;
+        upd_prod1.set_id("101");
+        upd_prod1.set_name("Samsung Galaxy S20");
+        upd_prod1.set_description("C++ client");
+        upd_prod1.set_price(799.00f);
+
+        product::Product upd_prod2;
+        upd_prod2.set_id("103");
+        upd_prod2.set_name("Apple Watch S4");
+        upd_prod2.set_description("C++ client");
+        upd_prod2.set_price(399.00f);
+
+        update_products.push_back(upd_prod1);
+        update_products.push_back(upd_prod2);
+
+        std::cout << "\n--- Updating products ---" << std::endl;
+        client.UpdateProducts(update_products);
 
         // =========================================
-	    // Process products: Bi-directional streaming 
+	    // Process products: Bi-directional streaming
 
     } catch (const std::exception& e) {
         std::cerr << "Client failed with exception: " << e.what() << std::endl;

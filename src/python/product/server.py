@@ -8,6 +8,7 @@ import logging
 import uuid
 from concurrent import futures
 import grpc
+from google.protobuf import wrappers_pb2
 from product import product_info_pb2 as pb2, product_info_pb2_grpc as pb2_grpc
 
 
@@ -48,6 +49,19 @@ class ProductInfoServicer(pb2_grpc.ProductInfoServicer):
                 # Send the matching product in the stream
                 yield product
                 logging.info(f"Matching Product Found : {key}")
+
+    def updateProducts(self, request_iterator, context):
+        """Update products using client streaming."""
+        orders_str = "Updated Order IDs : "
+
+        for product in request_iterator:
+            # Update product in the map
+            self.product_map[product.id] = product
+            logging.info(f"Order ID : {product.id} - Updated")
+            orders_str += product.id + ", "
+
+        # Return the final response
+        return wrappers_pb2.StringValue(value=f"Orders processed {orders_str}")
 
 
 def serve():
