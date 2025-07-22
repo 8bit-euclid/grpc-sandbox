@@ -10,52 +10,39 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       packages: read
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Generate devcontainer cache key
-        id: devcontainer-cache-key
+      - name: Generate cache key
+        id: cache-key
         run: |
-          # Create a hash of all devcontainer-related files
-          CACHE_KEY=$(find .devcontainer -type f \( -name "*.json" -o -name "*.sh" -o -name "Dockerfile" \) -exec sha256sum {} \; | sort | sha256sum | cut -d' ' -f1)
-          echo "cache-key=devcontainer-test-$CACHE_KEY" >> $GITHUB_OUTPUT
-          echo "Cache key: devcontainer-test-$CACHE_KEY"
+          HASH=$(find .devcontainer -type f \( -name "*.json" -o -name "*.sh" -o -name "Dockerfile" \) -exec sha256sum {} \; | sort | sha256sum | cut -d' ' -f1)
+          echo "key=devcontainer-test-$HASH" >> $GITHUB_OUTPUT
 
-      - name: Check devcontainer test cache
-        id: cache-test
+      - name: Check test cache
+        id: cache
         uses: actions/cache@v4
         with:
           path: .devcontainer-test-success
-          key: ${{ steps.devcontainer-cache-key.outputs.cache-key }}
+          key: ${{ steps.cache-key.outputs.key }}
 
-      - name: Test DevContainer
-        if: steps.cache-test.outputs.cache-hit != 'true'
+      - name: Run test
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
+          # Login and pull image
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          IMAGE="ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}"
+          docker pull "$IMAGE"
+
+          # Install CLI and test
           npm install -g @devcontainers/cli
-
-          IMAGE_TAG="ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}"
-          docker pull "$IMAGE_TAG"
-
-          # Update devcontainer.json to use the built image
-          jq --arg image "$IMAGE_TAG" '.image = $image | del(.build)' .devcontainer/devcontainer.json > temp.json
+          jq --arg image "$IMAGE" '.image = $image | del(.build)' .devcontainer/devcontainer.json > temp.json
           mv temp.json .devcontainer/devcontainer.json
-
           devcontainer up --workspace-folder .
 
-          # Mark test as successful
-          echo "DevContainer test passed at $(date)" > .devcontainer-test-success
-
-      - name: Cache test result
-        if: steps.cache-test.outputs.cache-hit != 'true'
-        run: echo "DevContainer test completed and cached"
+          # Cache success
+          echo "Test passed at $(date)" > .devcontainer-test-success
