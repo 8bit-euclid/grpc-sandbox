@@ -19,7 +19,7 @@ def run():
     try:
         # Add Product 1
         name1 = "Apple iPhone 11"
-        description1 = ("Python client")
+        description1 = "Python client"
         price1 = 699.00
 
         response1 = stub.addProduct(pb2.Product(
@@ -31,7 +31,7 @@ def run():
 
         # Add Product 2
         name2 = "Google Pixel 4a"
-        description2 = ("Python client")
+        description2 = "Python client"
         price2 = 399.00
 
         response2 = stub.addProduct(pb2.Product(

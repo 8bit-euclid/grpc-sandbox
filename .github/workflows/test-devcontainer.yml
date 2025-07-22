@@ -7,13 +7,17 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Dev Containers CLI
         run: npm install -g @devcontainers/cli
 
+      - name: Build DevContainer
+        run: devcontainer build --workspace-folder . --cache-from type=gha --cache-to type=gha,mode=max
+
       - name: Test DevContainer
-        run: |
-          devcontainer build --workspace-folder .
-          devcontainer up --workspace-folder .
+        run: devcontainer up --workspace-folder .
