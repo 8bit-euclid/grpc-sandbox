@@ -16,21 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check devcontainer cache
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: .devcontainer-test-success
-          key: devcontainer-test-${{ hashFiles('.devcontainer/**/*.json', '.devcontainer/**/*.sh', '.devcontainer/**/Dockerfile') }}
-
-      - name: Report cache status
-        run: |
-          if [[ "${{ steps.cache.outputs.cache-hit }}" == "true" ]]; then
-            echo "✅ Test cache hit - skipping all tests"
-          else
-            echo "🧪 Test cache miss - running all tests"
-          fi
-
       - name: Cache DevContainers CLI
         if: steps.cache.outputs.cache-hit != 'true'
         id: cli-cache
@@ -53,12 +38,11 @@ jobs:
           IMAGE="ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}"
           docker pull "$IMAGE"
 
-          # Modify devcontainer.json to use pre-built image, and test
+          # Modify devcontainer.json to use pre-built image
           jq --arg image "$IMAGE" \
             '.image = $image | del(.build)' \
             .devcontainer/devcontainer.json > temp.json
           mv temp.json .devcontainer/devcontainer.json
+          
+          # Run devcontainer to trigger post-create script and tests
           devcontainer up --workspace-folder .
-
-          # Cache success
-          echo "Test passed at $(date)" > .devcontainer-test-success
