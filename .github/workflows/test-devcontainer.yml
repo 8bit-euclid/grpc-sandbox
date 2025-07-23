@@ -16,33 +16,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache DevContainers CLI
-        if: steps.cache.outputs.cache-hit != 'true'
-        id: cli-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: devcontainers-cli-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            devcontainers-cli-${{ runner.os }}-
-
       - name: Install DevContainers CLI
-        if: steps.cache.outputs.cache-hit != 'true'
         run: npm install -g @devcontainers/cli
 
-      - name: Run test
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Pull pre-built devcontainer image
         run: |
-          # Login and pull image from registry
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           IMAGE="ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}"
           docker pull "$IMAGE"
 
-          # Modify devcontainer.json to use pre-built image
+      - name: Configure devcontainer to use pre-built image
+        run: |
+          IMAGE="ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}"
           jq --arg image "$IMAGE" \
             '.image = $image | del(.build)' \
             .devcontainer/devcontainer.json > temp.json
           mv temp.json .devcontainer/devcontainer.json
-          
-          # Run devcontainer to trigger post-create script and tests
-          devcontainer up --workspace-folder .
+
+      - name: Run devcontainer tests
+        run: devcontainer up --workspace-folder .
