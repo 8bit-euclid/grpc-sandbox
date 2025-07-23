@@ -32,9 +32,9 @@ jobs:
       - name: Report cache status
         run: |
           if [[ "${{ steps.cache.outputs.cache-hit }}" == "true" ]]; then
-            echo "✅ Test cache hit - previous test results found"
+            echo "✅ Test cache hit - skipping all tests"
           else
-            echo "🧪 Test cache miss - running fresh tests"
+            echo "🧪 Test cache miss - running all tests"
           fi
 
       - name: Run test
