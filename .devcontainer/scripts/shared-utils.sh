@@ -41,7 +41,7 @@ wait_for_docker() {
         else
             if [ $i -eq $max_attempts ]; then
                 if is_devcontainer; then
-                    log_warning "Docker daemon not accessible after $max_attempts seconds in devcontainer - this may be expected during initial setup"
+                    log_warning "Docker daemon not accessible after $max_attempts seconds in devcontainer"
                 else
                     log_warning "Docker daemon not accessible after $max_attempts seconds, continuing anyway..."
                 fi

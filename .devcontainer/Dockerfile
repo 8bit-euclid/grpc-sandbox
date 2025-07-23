@@ -18,6 +18,7 @@ RUN chown -R vscode:vscode /workspace \
 # Install essential packages
 RUN apt-get update && apt-get install -y \
     # Basic tools
+    sudo \
     curl \
     wget \
     make \
