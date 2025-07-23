@@ -40,14 +40,16 @@ jobs:
       - name: Run test
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          # Login and pull image
+          # Login and pull image from registry
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           IMAGE="ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}"
           docker pull "$IMAGE"
 
-          # Install CLI and test
+          # Install CLI, modify devcontainer.json to use pre-built image, and test
           npm install -g @devcontainers/cli
-          jq --arg image "$IMAGE" '.image = $image | del(.build)' .devcontainer/devcontainer.json > temp.json
+          jq --arg image "$IMAGE" \
+            '.image = $image | del(.build)' \
+            .devcontainer/devcontainer.json > temp.json
           mv temp.json .devcontainer/devcontainer.json
           devcontainer up --workspace-folder .
 
