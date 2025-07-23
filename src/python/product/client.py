@@ -17,6 +17,8 @@ def run():
     stub = pb2_grpc.ProductInfoStub(channel)
 
     try:
+        # =========================================
+        # Add Products: Unary RPC
         # Add Product 1
         name1 = "Apple iPhone 11"
         description1 = "Python client"
