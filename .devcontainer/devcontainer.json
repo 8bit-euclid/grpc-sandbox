@@ -13,15 +13,16 @@
     "customizations": {
         "vscode": {
             "extensions": [
+                "vscode.git",
+                "ms-vscode.makefile-tools",
+                "bazelbuild.vscode-bazel",
+                "zxh404.vscode-proto3",
                 "ms-vscode.cpptools",
                 "ms-python.python",
+                "golang.go",
                 "ms-python.pylint",
                 "ms-python.autopep8",
-                "golang.go",
-                "bazelbuild.vscode-bazel",
-                "augment.vscode-augment",
-                "vscode.git",
-                "zxh404.vscode-proto3"
+                "augment.vscode-augment"
             ],
             "settings": {
                 "C_Cpp.default.cppStandard": "c++23",
