@@ -24,7 +24,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push to registry
-        id: build
         uses: docker/build-push-action@v5
         with:
           context: .devcontainer
@@ -34,11 +33,3 @@ jobs:
             ghcr.io/${{ github.repository }}/devcontainer:latest
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/devcontainer:buildcache,mode=max
-
-      - name: Report cache status
-        run: |
-          if [[ "${{ steps.build.outputs.cache-hit }}" == "true" ]]; then
-            echo "✅ Docker build cache hit - layers were reused from cache"
-          else
-            echo "🔨 Docker build cache miss - building from scratch or partial cache"
-          fi
