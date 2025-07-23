@@ -29,8 +29,15 @@ jobs:
           path: .devcontainer-test-success
           key: ${{ steps.cache-key.outputs.key }}
 
+      - name: Report cache status
+        run: |
+          if [[ "${{ steps.cache.outputs.cache-hit }}" == "true" ]]; then
+            echo "✅ Test cache hit - previous test results found"
+          else
+            echo "🧪 Test cache miss - running fresh tests"
+          fi
+
       - name: Run test
-        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           # Login and pull image
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
