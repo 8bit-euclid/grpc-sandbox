@@ -40,7 +40,7 @@ RUN wget -O go.tar.gz https://go.dev/dl/go1.24.4.linux-amd64.tar.gz \
 RUN wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v1.55.1/buf-Linux-x86_64 \
     && chmod +x /usr/local/bin/buf
 
-# Install Bazelisk as the Bazel binary (Bazelisk is a wrapper and version manager for Bazel)
+# Install Bazelisk as the Bazel binary (wrapper and version manager for Bazel)
 RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.26.0/bazelisk-linux-amd64 \
     && chmod +x /usr/local/bin/bazel
 
