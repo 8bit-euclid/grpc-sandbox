@@ -1,14 +1,10 @@
 #!/bin/bash
-
 # Configuration validation test script
 set -euo pipefail
 
-# Get script directory and source utilities
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/../shared-utils.sh"
-
-# Get workspace root
-WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+# Source utilities and initialize paths
+source "$(dirname "${BASH_SOURCE[0]}")/../shared-utils.sh"
+init_test_paths
 
 test_configuration() {
     local devcontainer_json="$WORKSPACE_ROOT/.devcontainer/devcontainer.json"

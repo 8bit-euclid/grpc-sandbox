@@ -1,18 +1,14 @@
 #!/bin/bash
-
 # System resources test script
 set -euo pipefail
 
-# Get script directory and source utilities
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/../shared-utils.sh"
+# Source utilities and initialize paths
+source "$(dirname "${BASH_SOURCE[0]}")/../shared-utils.sh"
+init_test_paths
 
 test_system_resources() {
-    # Get workspace root
-    local workspace_root="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-    
     # Check disk space
-    local available_space=$(get_disk_space "$workspace_root")
+    local available_space=$(get_disk_space "$WORKSPACE_ROOT")
     log_success "Available disk space: $available_space"
     
     # Check memory (if available)

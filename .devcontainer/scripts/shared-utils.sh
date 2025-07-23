@@ -12,6 +12,14 @@ NC='\033[0m'
 # Global exit code tracking
 EXIT_CODE=0
 
+# Initialize common paths for test scripts
+init_test_paths() {
+    # Set SCRIPT_DIR to the directory of the calling script
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
+    # Set WORKSPACE_ROOT to the repository root (3 levels up from test scripts)
+    WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+}
+
 # Logging functions
 log_success() { echo -e "${GREEN}✓ $1${NC}"; }
 log_warning() { echo -e "${YELLOW}⚠ $1${NC}"; }
@@ -121,4 +129,18 @@ get_disk_space() {
 is_port_in_use() {
     local port="$1"
     lsof -Pi ":$port" -sTCP:LISTEN -t &>/dev/null
+}
+
+# Extract repository name from GitHub environment or git remote
+get_repo_name() {
+    [[ -n "${GITHUB_REPOSITORY:-}" ]] && echo "$GITHUB_REPOSITORY" && return
+
+    local workspace_root="${WORKSPACE_ROOT:-$(pwd)}"
+    local remote_url=$(git -C "$workspace_root" remote get-url origin 2>/dev/null || echo "")
+    if [[ "$remote_url" =~ git@github\.com[^:]*:([^/]+/[^/]+)\.git$ ]] ||
+       [[ "$remote_url" =~ git@github\.com[^:]*:([^/]+/[^/]+)$ ]] ||
+       [[ "$remote_url" =~ https://github\.com/([^/]+/[^/]+)\.git$ ]] ||
+       [[ "$remote_url" =~ https://github\.com/([^/]+/[^/]+)$ ]]; then
+        echo "${BASH_REMATCH[1]}"
+    fi
 }

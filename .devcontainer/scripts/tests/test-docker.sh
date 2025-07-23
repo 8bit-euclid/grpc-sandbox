@@ -1,11 +1,10 @@
 #!/bin/bash
-
 # Docker functionality test script
 set -euo pipefail
 
-# Get script directory and source utilities
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/../shared-utils.sh"
+# Source utilities and initialize paths
+source "$(dirname "${BASH_SOURCE[0]}")/../shared-utils.sh"
+init_test_paths
 
 test_docker_installation() {
     if command_exists docker; then
