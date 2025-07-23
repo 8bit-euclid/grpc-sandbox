@@ -5,6 +5,7 @@ on:
     paths:
       - '.devcontainer/**'
       - '.github/workflows/build-devcontainer.yml'
+      - '.github/workflows/test-devcontainer.yml'
   workflow_dispatch:
 
 jobs:
