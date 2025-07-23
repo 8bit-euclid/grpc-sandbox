@@ -1,5 +1,5 @@
 {
-    "name": "gRPC Sandbox",
+    "name": "gRPC Sandbox DevContainer",
     "build": {
         "dockerfile": "Dockerfile"
     },
