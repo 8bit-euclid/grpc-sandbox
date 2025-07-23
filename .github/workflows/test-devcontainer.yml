@@ -37,6 +37,7 @@ jobs:
           fi
 
       - name: Run test
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           # Login and pull image
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
