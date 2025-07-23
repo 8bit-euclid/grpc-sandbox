@@ -22,13 +22,10 @@ RUN apt-get update && apt-get install -y \
     wget \
     make \
     build-essential \
-    libgrpc++-dev \
-    sudo \
     git \
     # Python
     python3 \
     python3-pip \
-    python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Go
