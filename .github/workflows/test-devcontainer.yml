@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows: ["Build DevContainer"]
     types: [completed]
-    branches: [main]
 
 jobs:
   test:
