@@ -19,7 +19,7 @@ def run():
     try:
         # =========================================
         # Add Products: Unary RPC
-        # Product 1
+        # Add Product 1
         name1 = "Apple iPhone 11"
         description1 = "Python client"
         price1 = 699.00
@@ -31,7 +31,7 @@ def run():
         ))
         logging.info("AddProduct Response -> %s", response1.value)
 
-        # Product 2
+        # Add Product 2
         name2 = "Google Pixel 4a"
         description2 = "Python client"
         price2 = 399.00
