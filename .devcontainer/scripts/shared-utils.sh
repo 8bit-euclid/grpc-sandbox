@@ -9,7 +9,7 @@ YELLOW='\033[1;38;5;178m'
 RED='\033[1;31m'
 NC='\033[0m'
 
-# Global exit code tracking
+# Exit code tracking
 EXIT_CODE=0
 
 # Initialize common paths for test scripts
