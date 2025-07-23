@@ -31,6 +31,20 @@ jobs:
             echo "🧪 Test cache miss - running all tests"
           fi
 
+      - name: Cache DevContainers CLI
+        if: steps.cache.outputs.cache-hit != 'true'
+        id: cli-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: devcontainers-cli-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            devcontainers-cli-${{ runner.os }}-
+
+      - name: Install DevContainers CLI
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install -g @devcontainers/cli
+
       - name: Run test
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -39,8 +53,7 @@ jobs:
           IMAGE="ghcr.io/${{ github.repository }}/devcontainer:${{ github.ref_name }}"
           docker pull "$IMAGE"
 
-          # Install CLI, modify devcontainer.json to use pre-built image, and test
-          npm install -g @devcontainers/cli
+          # Modify devcontainer.json to use pre-built image, and test
           jq --arg image "$IMAGE" \
             '.image = $image | del(.build)' \
             .devcontainer/devcontainer.json > temp.json

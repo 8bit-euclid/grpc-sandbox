@@ -4,8 +4,7 @@ on:
   push:
     paths:
       - '.devcontainer/**'
-      - '.github/workflows/build-devcontainer.yml'
-      - '.github/workflows/test-devcontainer.yml'
+      - '.github/workflows/*-devcontainer.yml'
   workflow_dispatch:
 
 jobs:
