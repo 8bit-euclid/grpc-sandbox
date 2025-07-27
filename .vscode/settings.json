@@ -1,7 +1,4 @@
 {
-  // Augment extension settings
-  "augment.enableAutoCompletion": true,
-  "augment.enableInlineChat": true,
   // Other extension settings
   "editor.formatOnSave": true,
   "editor.tabSize": 4,

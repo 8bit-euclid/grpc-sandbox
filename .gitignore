@@ -1,9 +1,5 @@
 # Bazel build artifacts - DO NOT COMMIT THESE
 bazel-*
-bazel-out/
-bazel-bin/
-bazel-testlogs/
-bazel-workspace/
 
 # Generated protobuf files
 gen/
