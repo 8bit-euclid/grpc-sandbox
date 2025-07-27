@@ -21,18 +21,14 @@
                 "ms-python.python",
                 "golang.go",
                 "ms-python.pylint",
-                "ms-python.autopep8",
-                "augment.vscode-augment"
+                "ms-python.autopep8"
             ],
             "settings": {
                 "C_Cpp.default.cppStandard": "c++23",
                 "C_Cpp.default.cStandard": "c17",
                 "python.linting.enabled": true,
                 "python.linting.pylintEnabled": true,
-                "python.formatting.provider": "black",
-                "augment.enableAutoCompletion": true,
-                "augment.enableInlineChat": true,
-                "augment.apiEndpoint": "your-api-endpoint-if-custom"
+                "python.formatting.provider": "black"
             }
         }
     },
@@ -57,7 +53,7 @@
     "mounts": [
         "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
     ],
-    "runArgs": ["--privileged"],
+    "runArgs": ["--privileged", "--name", "vsc-grpc-sandbox"],
     "containerEnv": {
         "WORKSPACE_FOLDER": "/workspace",
         "DEVCONTAINER": "1"
