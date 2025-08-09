@@ -19,6 +19,7 @@
                 "zxh404.vscode-proto3",
                 "ms-vscode.cpptools",
                 "ms-python.python",
+                "ms-python.isort",
                 "golang.go",
                 "ms-python.pylint",
                 "ms-python.autopep8"
